@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>04 — Registration status</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .top { height: 70px; border-bottom:1px solid var(--line); background:var(--ivory-100); }
+  .top .container-wide { height:70px; display:flex; align-items:center; justify-content:space-between; }
+  .top .right { display:flex; align-items:center; gap:20px; font-size:12px; color:var(--muted); }
+  .top .right a { font-weight:650; color:var(--ink-900); }
+  .main { position:relative; padding:44px 0 26px; min-height:790px; overflow:hidden; }
+  .main::before { content:""; position:absolute; width:560px; height:560px; border:1px solid rgba(201,162,39,.14); border-radius:50%; right:-190px; bottom:-300px; }
+  .main::after { content:""; position:absolute; width:380px; height:380px; border:1px solid rgba(14,124,123,.10); border-radius:50%; right:-100px; bottom:-210px; }
+  .crumbs { display:flex; align-items:center; gap:8px; font-size:10.5px; color:var(--muted); letter-spacing:.04em; }
+  .crumbs b { color:var(--ink-900); font-weight:600; }
+  .grid { display:grid; grid-template-columns: 1fr 336px; gap:30px; margin-top:18px; align-items:start; position:relative; }
+  .status-card { background:var(--paper); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); padding:36px 38px 30px; }
+  .status-head { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; }
+  .status-card h1 { font-size:40px; line-height:1.06; letter-spacing:-.035em; margin:7px 0 0; }
+  .status-card .sub { font-size:14px; line-height:1.6; color:var(--slate-700); margin:10px 0 0; max-width:530px; }
+  .stepper { display:grid; grid-template-columns: repeat(3, 1fr); gap:0; margin-top:28px; position:relative; }
+  .step { position:relative; padding-top:22px; }
+  .step::before { content:""; position:absolute; top:7px; left:0; right:0; height:1px; background:var(--line-strong); }
+  .step:first-child::before { left:7px; }
+  .step:last-child::before { right:7px; }
+  .step .dot { position:absolute; top:0; left:0; width:15px; height:15px; border-radius:50%; background:var(--paper); border:1px solid var(--line-strong); z-index:2; }
+  .step.done .dot { background:var(--gold-600); border-color:var(--gold-600); }
+  .step.current .dot { background:var(--paper); border:2px solid var(--amber-600); box-shadow:0 0 0 4px rgba(180,83,9,.11); }
+  .step .label { font-size:11px; font-weight:650; color:var(--ink-900); }
+  .step .state { font-size:10px; color:var(--muted); margin-top:3px; }
+  .step.done .state { color:var(--gold-700); }
+  .step.current .state { color:var(--amber-600); }
+  .detail-panel { margin-top:26px; border:1px solid var(--sand-200); background:var(--sand-100); border-radius:9px; padding:14px 18px; display:grid; grid-template-columns: repeat(3, 1fr); gap:18px; }
+  .detail .k { font-size:9.5px; letter-spacing:.11em; text-transform:uppercase; color:#7A6B52; font-weight:700; }
+  .detail .v { font-size:12.5px; font-weight:600; color:var(--ink-900); margin-top:4px; }
+  .detail .v.mono { font-family:var(--font-mono); font-size:11.5px; }
+  .next { margin-top:26px; }
+  .next h2 { font-size:13px; letter-spacing:.02em; margin:0 0 10px; }
+  .next-row { display:flex; gap:14px; padding:12px 0; border-top:1px solid var(--line); align-items:flex-start; }
+  .next-row .n { width:24px; height:24px; border-radius:50%; border:1px solid var(--line-strong); display:grid; place-items:center; font-family:var(--font-mono); font-size:9.5px; color:var(--muted); flex:none; }
+  .next-row .t { font-size:12px; font-weight:600; color:var(--ink-900); }
+  .next-row .d { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.5; }
+  .actions { display:flex; align-items:center; gap:12px; margin-top:24px; }
+  .actions .btn { height:44px; }
+  .fineprint { margin-top:18px; padding-top:14px; border-top:1px solid var(--line); font-size:10px; color:var(--muted); display:flex; align-items:center; gap:7px; }
+  .fineprint svg { color:var(--teal-600); }
+  .aside { display:flex; flex-direction:column; gap:16px; }
+  .aside-card { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:22px 22px 18px; box-shadow:var(--shadow-sm); }
+  .aside-card.dark { background:var(--ink-900); border-color:rgba(247,243,234,.08); color:var(--ivory-100); }
+  .aside-card.dark h3 { color:var(--ivory-50); }
+  .aside-card h3 { font-size:14px; margin:0 0 4px; letter-spacing:-.01em; }
+  .aside-card .intro { font-size:11px; line-height:1.5; color:var(--muted); margin:0 0 14px; }
+  .aside-card.dark .intro { color:rgba(247,243,234,.55); }
+  .checkrow { display:flex; gap:11px; padding:9px 0; border-top:1px solid var(--line); align-items:flex-start; }
+  .aside-card.dark .checkrow { border-color:rgba(247,243,234,.10); }
+  .checkrow .box { width:18px; height:18px; border-radius:50%; border:1px solid var(--sand-300); display:grid; place-items:center; flex:none; color:var(--gold-600); }
+  .aside-card.dark .checkrow .box { border-color:rgba(201,162,39,.45); color:var(--gold-500); }
+  .checkrow .box svg { width:10px; height:10px; }
+  .checkrow .t { font-size:11.5px; font-weight:600; color:var(--ink-900); }
+  .aside-card.dark .checkrow .t { color:var(--ivory-100); }
+  .checkrow .d { font-size:10px; color:var(--muted); margin-top:2px; line-height:1.45; }
+  .aside-card.dark .checkrow .d { color:rgba(247,243,234,.5); }
+  .support-row { display:flex; align-items:center; gap:10px; padding-top:4px; }
+  .support-row .icon { color:var(--teal-600); }
+  .support-row .t { font-size:11px; font-weight:600; }
+  .support-row .d { font-size:10px; color:var(--muted); margin-top:1px; }
+  .bottom { height:44px; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; font-size:10px; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="browser">
+  <div class="chrome">
+    <div class="chrome-dots"><i class="chrome-dot"></i><i class="chrome-dot"></i><i class="chrome-dot"></i></div>
+    <div class="chrome-url"><svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>ais2026.example/registration/status</div>
+    <div class="chrome-right"><span></span><span></span><span></span></div>
+  </div>
+
+  <header class="top">
+    <div class="container-wide">
+      <div class="lockup">
+        <div class="mark sm"><svg><use href="#i-konark"/></svg></div>
+        <div><div class="name" style="font-size:10.5px">Odisha AI Symposium</div><div class="sub">SOA University · 2026</div></div>
+      </div>
+      <div class="right"><span>Registration support</span><a href="#">Need help? →</a></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container-wide">
+      <div class="crumbs"><span>Home</span><span>/</span><span>Registration</span><span>/</span><b>Status</b></div>
+      <div class="grid">
+        <section class="status-card">
+          <div class="status-head">
+            <div>
+              <div class="eyebrow">Registration · AIS26</div>
+              <h1 class="h1">You’re in the queue.</h1>
+              <p class="sub">We’ve received your form. The team will verify your details and confirm your place by email. Nothing else is needed from you right now.</p>
+            </div>
+            <span class="pill pill-amber pill-lg"><span class="dot"></span> In review</span>
+          </div>
+
+          <div class="stepper">
+            <div class="step done"><span class="dot"></span><div class="label">Form received</div><div class="state">Done</div></div>
+            <div class="step current"><span class="dot"></span><div class="label">Verification</div><div class="state">In review</div></div>
+            <div class="step"><span class="dot"></span><div class="label">QR pass</div><div class="state">Issued at arrival</div></div>
+          </div>
+
+          <div class="detail-panel">
+            <div class="detail"><div class="k">Reference</div><div class="v mono">AIS26-XXXX</div></div>
+            <div class="detail"><div class="k">Email</div><div class="v">you@example.com</div></div>
+            <div class="detail"><div class="k">Submitted</div><div class="v">Today, 10:42</div></div>
+          </div>
+
+          <div class="next">
+            <h2 class="h4">What happens next</h2>
+            <div class="next-row"><span class="n">1</span><div><div class="t">The team verifies your registration</div><div class="d">We check the details you submitted and the photo you provided.</div></div></div>
+            <div class="next-row"><span class="n">2</span><div><div class="t">You receive a confirmation email</div><div class="d">The email will confirm your place and explain what to bring.</div></div></div>
+            <div class="next-row"><span class="n">3</span><div><div class="t">Your QR pass is issued at the arrival desk</div><div class="d">A volunteer verifies your identity, then prints or sends your one-time entry pass.</div></div></div>
+          </div>
+
+          <div class="actions">
+            <a href="#" class="btn btn-ink">Check status <svg class="icon"><use href="#i-refresh"/></svg></a>
+            <a href="#" class="btn btn-outline">Contact support</a>
+            <span class="caption muted" style="margin-left:auto">Last checked just now</span>
+          </div>
+
+          <div class="fineprint"><svg class="icon-sm"><use href="#i-lock"/></svg> Your details are used only for event registration and access.</div>
+        </section>
+
+        <aside class="aside">
+          <div class="aside-card dark">
+            <div class="row gap-3" style="margin-bottom:10px"><div class="mark sm on-dark"><svg><use href="#i-konark"/></svg></div><span class="eyebrow on-dark">Before you arrive</span></div>
+            <h3>Three things to prepare.</h3>
+            <p class="intro">The arrival desk is the only place your pass is issued.</p>
+            <div class="checkrow"><span class="box"><svg><use href="#i-check"/></svg></span><div><div class="t">Photo ID</div><div class="d">Helps the desk verify you quickly.</div></div></div>
+            <div class="checkrow"><span class="box"><svg><use href="#i-check"/></svg></span><div><div class="t">The email you registered with</div><div class="d">Useful if we need to find your record.</div></div></div>
+            <div class="checkrow" style="border-bottom:0"><span class="box"><svg><use href="#i-check"/></svg></span><div><div class="t">A few minutes for verification</div><div class="d">Face verification and pass issuance happen on site.</div></div></div>
+          </div>
+
+          <div class="aside-card">
+            <h3>Registration support</h3>
+            <p class="intro">Questions about your form, accessibility needs or the arrival process?</p>
+            <div class="support-row"><svg class="icon"><use href="#i-mail"/></svg><div><div class="t">Contact the host office</div><div class="d">Use the email address on your confirmation.</div></div></div>
+            <div class="hairline" style="margin:14px 0"></div>
+            <div class="support-row"><svg class="icon"><use href="#i-shield"/></svg><div><div class="t">Privacy and consent</div><div class="d">Read how photos and biometric data are handled.</div></div></div>
+          </div>
+
+          <div class="aside-card" style="background:var(--sand-100);border-color:var(--sand-200);box-shadow:none">
+            <div class="row gap-2" style="margin-bottom:7px"><svg class="icon-sm" style="color:var(--gold-600)"><use href="#i-calendar"/></svg><span class="eyebrow" style="color:#6B5508">Dates</span></div>
+            <div style="font-size:12px;font-weight:600">Event date to be announced</div>
+            <div class="caption muted" style="margin-top:3px">We’ll email you as soon as the programme is published.</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <div class="container-wide">
+    <div class="bottom"><span>© 2026 Odisha AI Symposium · SOA University</span><span>Privacy · Accessibility · Contact</span></div>
+  </div>
+</div>
+<script src="mock.js"></script>
+</body>
+</html>

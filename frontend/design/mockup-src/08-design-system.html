@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>08 — Design system</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  body { background: var(--ivory-100); }
+  .sheet { width:1440px; height:1800px; padding:48px 64px 30px; position:relative; overflow:hidden; background:
+    radial-gradient(900px 500px at 88% -10%, rgba(201,162,39,.08), transparent 66%),
+    var(--ivory-100); }
+  .sheet::before { content:""; position:absolute; width:680px; height:680px; border:1px solid rgba(201,162,39,.10); border-radius:50%; right:-260px; top:-330px; }
+  .head { display:flex; align-items:flex-start; justify-content:space-between; position:relative; height:168px; }
+  .head .eyebrow { font-size:10px; letter-spacing:.19em; }
+  .head h1 { font-family:var(--font-display); font-size:64px; line-height:.98; letter-spacing:-.045em; margin:8px 0 0; font-weight:600; }
+  .head .sub { font-size:14px; color:var(--slate-700); margin-top:10px; max-width:620px; line-height:1.55; }
+  .head .meta { display:flex; gap:8px; margin-top:14px; }
+  .head .right { text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:14px; }
+  .head .right .wheel { width:100px; height:100px; color:var(--gold-500); opacity:.85; }
+  .head .right .note { font-size:9px; letter-spacing:.08em; color:var(--muted); text-transform:uppercase; }
+  .rule { height:1px; background:var(--line); margin-bottom:20px; }
+  .sec { position:relative; }
+  .sec-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:13px; }
+  .sec-head .left { display:flex; align-items:baseline; gap:12px; }
+  .sec-head .num { font-family:var(--font-mono); font-size:10px; color:var(--gold-700); letter-spacing:.08em; }
+  .sec-head h2 { font-size:19px; letter-spacing:-.02em; margin:0; }
+  .sec-head .note { font-size:9.5px; color:var(--muted); }
+  .swatches { display:grid; grid-template-columns:repeat(6, 1fr); gap:12px; }
+  .sw { height:112px; border-radius:9px; padding:12px 13px; display:flex; flex-direction:column; justify-content:space-between; border:1px solid rgba(11,31,58,.08); position:relative; overflow:hidden; }
+  .sw .name { font-size:11.5px; font-weight:650; }
+  .sw .usage { font-size:8.5px; opacity:.66; margin-top:2px; }
+  .sw .hex { font-family:var(--font-mono); font-size:9px; letter-spacing:.04em; }
+  .sw .ratio { position:absolute; top:11px; right:11px; font-family:var(--font-mono); font-size:7.5px; padding:2px 5px; border-radius:3px; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.15); }
+  .sw.light .ratio { background:rgba(11,31,58,.06); border-color:rgba(11,31,58,.08); }
+  .neutrals { display:grid; grid-template-columns:repeat(6, 1fr); gap:12px; margin-top:12px; }
+  .nsw { height:46px; border-radius:7px; border:1px solid rgba(11,31,58,.08); display:flex; align-items:center; justify-content:space-between; padding:0 11px; font-size:9px; }
+  .nsw .hex { font-family:var(--font-mono); opacity:.62; font-size:8.5px; }
+  .split { display:grid; grid-template-columns: 1.28fr .72fr; gap:44px; }
+  .type-row { display:flex; align-items:baseline; justify-content:space-between; gap:18px; padding:7px 0; border-bottom:1px solid var(--line); }
+  .type-row:first-child { border-top:1px solid var(--line); }
+  .type-row .sample { color:var(--ink-900); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .type-row .metrics { font-family:var(--font-mono); font-size:8px; color:var(--muted); white-space:nowrap; letter-spacing:.02em; }
+  .display-sample { font-family:var(--font-display); font-size:48px; line-height:.98; letter-spacing:-.045em; font-weight:600; }
+  .h1-sample { font-family:var(--font-display); font-size:34px; line-height:1.03; letter-spacing:-.035em; font-weight:600; }
+  .h2-sample { font-family:var(--font-display); font-size:25px; line-height:1.1; letter-spacing:-.03em; font-weight:600; }
+  .h3-sample { font-family:var(--font-display); font-size:19px; line-height:1.15; letter-spacing:-.02em; font-weight:600; }
+  .body-sample { font-size:14px; line-height:1.4; color:var(--slate-700); }
+  .small-sample { font-size:12px; line-height:1.4; color:var(--slate-700); }
+  .caption-sample { font-size:10px; color:var(--muted); }
+  .eyebrow-sample { font-size:8.5px; letter-spacing:.18em; text-transform:uppercase; font-weight:700; color:var(--gold-700); }
+  .type-notes { margin-top:15px; display:grid; grid-template-columns:1fr 1fr; gap:12px 20px; }
+  .type-notes .n { font-size:9px; color:var(--muted); line-height:1.5; }
+  .type-notes .n b { color:var(--ink-900); font-weight:650; display:block; font-size:9.5px; }
+  .btn-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px 12px; }
+  .btn-spec .k { font-size:8px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:5px; }
+  .btn-spec .btn { width:100%; height:40px; font-size:11.5px; }
+  .sizes { display:flex; align-items:flex-end; gap:12px; margin-top:16px; }
+  .sizes .sz { display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
+  .sizes .sz .b { background:var(--ink-900); color:var(--ivory-50); border-radius:7px; display:grid; place-items:center; font-size:10px; font-weight:600; }
+  .sizes .sz .l { font-family:var(--font-mono); font-size:7.5px; color:var(--muted); }
+  .focus-sample { margin-top:16px; border:1px solid var(--line); border-radius:7px; background:var(--paper); padding:9px 11px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .focus-sample .fake { height:26px; border:1px solid var(--ink-900); border-radius:5px; box-shadow:0 0 0 2px var(--paper), 0 0 0 4px var(--ink-900); display:flex; align-items:center; padding:0 9px; font-size:9px; color:var(--slate-700); flex:1; }
+  .focus-sample .l { font-family:var(--font-mono); font-size:7.5px; color:var(--muted); white-space:nowrap; }
+  .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 18px; }
+  .field .label { font-size:8.5px; }
+  .field .input { height:36px; font-size:10.5px; }
+  .field .help { font-size:8px; }
+  .badges { display:flex; flex-wrap:wrap; gap:7px; margin-top:16px; }
+  .badges .pill { height:23px; font-size:9px; padding:0 8px; }
+  .checks { display:flex; align-items:flex-start; gap:8px; margin-top:14px; }
+  .checks .t { font-size:8.5px; font-weight:600; }
+  .checks .d { font-size:7.5px; color:var(--muted); margin-top:2px; }
+  .spacing { display:flex; align-items:flex-end; gap:10px; margin-top:6px; }
+  .space { display:flex; flex-direction:column; gap:4px; }
+  .space i { display:block; height:8px; background:var(--gold-500); border-radius:1px; }
+  .space span { font-family:var(--font-mono); font-size:7.5px; color:var(--muted); }
+  .radii { display:flex; gap:8px; margin-top:16px; }
+  .radii .r { flex:1; height:42px; border:1px solid var(--line-strong); background:var(--paper); display:grid; place-items:center; font-family:var(--font-mono); font-size:8px; color:var(--muted); }
+  .elev { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px; }
+  .elev .e { height:50px; border-radius:7px; background:var(--paper); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:8px; color:var(--muted); }
+  .elev .e.sm { box-shadow:var(--shadow-sm); }
+  .elev .e.md { box-shadow:var(--shadow-md); }
+  .elev .e.lg { box-shadow:var(--shadow-lg); }
+  .iconrow { display:flex; flex-wrap:wrap; gap:7px; margin-top:2px; }
+  .iconbox { width:34px; height:34px; border:1px solid var(--line); border-radius:6px; background:var(--paper); display:grid; place-items:center; color:var(--ink-800); }
+  .motion { margin-top:14px; }
+  .motion .chips { display:flex; gap:7px; }
+  .motion .chip { height:23px; padding:0 8px; border:1px solid var(--line); border-radius:4px; display:flex; align-items:center; font-family:var(--font-mono); font-size:7.5px; color:var(--slate-700); background:var(--paper); }
+  .curve { margin-top:12px; border:1px solid var(--line); border-radius:7px; background:var(--paper); height:74px; display:flex; align-items:center; padding:0 12px; }
+  .curve svg { width:100%; height:48px; }
+  .brandgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .brandcard { height:86px; border:1px solid var(--line); border-radius:8px; background:var(--paper); display:flex; align-items:center; gap:12px; padding:0 14px; }
+  .brandcard.dark { background:var(--ink-900); border-color:rgba(247,243,234,.10); color:var(--ivory-100); }
+  .brandcard .txt .a { font-size:10.5px; font-weight:700; letter-spacing:.04em; }
+  .brandcard .txt .b { font-size:8px; color:var(--muted); margin-top:3px; letter-spacing:.05em; }
+  .brandcard.dark .txt .b { color:rgba(247,243,234,.58); }
+  .brandcard .txt .c { font-size:7.5px; color:var(--muted); margin-top:5px; }
+  .brandcard.dark .txt .c { color:rgba(247,243,234,.55); }
+  .brandnote { margin-top:9px; font-size:8.5px; line-height:1.5; color:var(--muted); }
+  .brandnote b { color:var(--ink-900); font-weight:650; }
+  .imggrid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .imgtile { height:86px; border-radius:8px; border:1px solid var(--line); position:relative; overflow:hidden; padding:9px 10px; display:flex; flex-direction:column; justify-content:flex-end; }
+  .imgtile .k { font-size:7.5px; letter-spacing:.10em; text-transform:uppercase; font-weight:700; }
+  .imgtile .d { font-size:7.5px; line-height:1.4; margin-top:3px; opacity:.74; }
+  .imgtile.geo { background:var(--ink-900); color:var(--ivory-100); }
+  .imgtile.geo::before { content:""; position:absolute; width:110px; height:110px; border:1px solid rgba(201,162,39,.38); border-radius:50%; right:-18px; top:-30px; }
+  .imgtile.geo::after { content:""; position:absolute; width:58px; height:58px; border:1px solid rgba(201,162,39,.22); border-radius:50%; right:7px; top:-4px; }
+  .imgtile.duo { background:linear-gradient(145deg,#D9CBB2,#BFAE90); color:#3A3022; }
+  .imgtile.duo::before { content:""; position:absolute; width:52px; height:52px; border-radius:50%; background:#8A7658; left:50%; top:14px; transform:translateX(-50%); opacity:.55; }
+  .imgtile.no { background:var(--sand-100); color:#5A4D38; border-style:dashed; }
+  .imgtile.no::before { content:""; position:absolute; width:1px; height:120px; background:rgba(180,83,9,.32); left:50%; top:-12px; transform:rotate(35deg); }
+  .a11y { display:flex; gap:7px; margin-top:12px; flex-wrap:wrap; }
+  .a11y span { height:22px; padding:0 8px; border-radius:4px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; font-size:8px; color:var(--muted); }
+  .foot { position:absolute; left:64px; right:64px; bottom:24px; border-top:1px solid var(--line); padding-top:9px; display:flex; align-items:center; justify-content:space-between; font-size:8.5px; color:var(--muted); }
+  .foot b { color:var(--ink-900); font-weight:600; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header class="head">
+    <div>
+      <div class="eyebrow">Odisha AI Symposium 2026 · Design foundations</div>
+      <h1>Design system</h1>
+      <p class="sub">An academic-tech visual language: ink and ivory, a measured gold, and one working teal for live systems. Every value below maps to a Tailwind v4 <span class="mono" style="font-size:12px">@theme</span> token.</p>
+      <div class="meta"><span class="pill pill-outline">v1.0</span><span class="pill pill-outline">React 19 · Vite 6 · Tailwind v4</span><span class="pill pill-outline">WCAG 2.2 AA</span></div>
+    </div>
+    <div class="right">
+      <div class="wheel"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="0.9"><use href="#i-konark"/></svg></div>
+      <div class="note">Implementation reference · not a logo</div>
+    </div>
+  </header>
+
+  <div class="rule"></div>
+
+  <section class="sec" style="height:232px">
+    <div class="sec-head"><div class="left"><span class="num">01</span><h2>Colour</h2></div><div class="note">Contrast measured on the paired surface · normal text needs 4.5:1</div></div>
+    <div class="swatches">
+      <div class="sw" style="background:#0B1F3A;color:#F7F3EA"><div><div class="name">Ink</div><div class="usage">Headlines, chrome, primary</div></div><div class="hex">#0B1F3A</div><span class="ratio">14.9:1 on ivory</span></div>
+      <div class="sw light" style="background:#F7F3EA;color:#0B1F3A"><div><div class="name">Ivory</div><div class="usage">Page canvas</div></div><div class="hex">#F7F3EA</div><span class="ratio">base surface</span></div>
+      <div class="sw light" style="background:#E8DCC8;color:#0B1F3A"><div><div class="name">Sandstone</div><div class="usage">Borders, quiet panels</div></div><div class="hex">#E8DCC8</div><span class="ratio">decorative</span></div>
+      <div class="sw light" style="background:#C9A227;color:#0B1F3A"><div><div class="name">Gold</div><div class="usage">Accent, ceremony, dark-surface text</div></div><div class="hex">#C9A227 · text #6B5508</div><span class="ratio">6.8:1 on ink</span></div>
+      <div class="sw" style="background:#0E7C7B;color:#fff"><div><div class="name">Teal</div><div class="usage">Arrived, verified, live</div></div><div class="hex">#0E7C7B</div><span class="ratio">4.5:1 on ivory</span></div>
+      <div class="sw light" style="background:#38BDF8;color:#0B1F3A"><div><div class="name">Cyan</div><div class="usage">Data accent only</div></div><div class="hex">#38BDF8</div><span class="ratio">7.7:1 on ink</span></div>
+    </div>
+    <div class="neutrals">
+      <div class="nsw" style="background:#12294A;color:#F7F3EA"><span>Ink 800</span><span class="hex">#12294A</span></div>
+      <div class="nsw" style="background:#FFFDF8;color:#0B1F3A"><span>Paper</span><span class="hex">#FFFDF8</span></div>
+      <div class="nsw" style="background:#FEF3C7;color:#7C3A06"><span>Pending</span><span class="hex">#B45309</span></div>
+      <div class="nsw" style="background:#FEE2E2;color:#991B1B"><span>Failed</span><span class="hex">#B91C1C</span></div>
+      <div class="nsw" style="background:#334155;color:#F7F3EA"><span>Slate</span><span class="hex">#334155</span></div>
+      <div class="nsw" style="background:#5B6B7F;color:#fff"><span>Muted</span><span class="hex">#5B6B7F</span></div>
+    </div>
+  </section>
+
+  <div class="rule" style="margin-top:18px"></div>
+
+  <section class="sec split" style="height:392px">
+    <div>
+      <div class="sec-head"><div class="left"><span class="num">02</span><h2>Type</h2></div><div class="note">Grotesk · 3 weights · tight display tracking</div></div>
+      <div class="type-row"><span class="sample display-sample">Intelligence,</span><span class="metrics">DISPLAY · 44–84 · −.045</span></div>
+      <div class="type-row"><span class="sample h1-sample">Rooted in Odisha.</span><span class="metrics">H1 · 36–56 · −.035</span></div>
+      <div class="type-row"><span class="sample h2-sample">A programme in progress.</span><span class="metrics">H2 · 28–40 · −.030</span></div>
+      <div class="type-row"><span class="sample h3-sample">Arrival desk · Main hall</span><span class="metrics">H3 · 20–26 · −.020</span></div>
+      <div class="type-row"><span class="sample body-sample">Registration and arrival, made calm.</span><span class="metrics">BODY · 15–17 / 1.65</span></div>
+      <div class="type-row"><span class="sample small-sample">A signed QR pass is issued at the desk.</span><span class="metrics">SMALL · 13–14 / 1.55</span></div>
+      <div class="type-row"><span class="sample caption-sample">Sample data · last updated 2 min ago</span><span class="metrics">CAPTION · 11–12 / 1.5</span></div>
+      <div class="type-row"><span class="eyebrow-sample">Registration status</span><span class="metrics">EYEBROW · 10–11 / .18em</span></div>
+      <div class="type-notes">
+        <div class="n"><b>Family</b>Segoe UI Variable for the mockups. Production: Inter or General Sans, self-hosted, variable.</div>
+        <div class="n"><b>Rules</b>Specimens are scaled to fit this sheet. No all-caps paragraphs. Tabular numerals in tables. Max 68ch for body copy.</div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-head"><div class="left"><span class="num">03</span><h2>Buttons</h2></div><div class="note">One primary action per view</div></div>
+      <div class="btn-grid">
+        <div class="btn-spec"><div class="k">Primary · ink</div><a class="btn btn-ink">Register interest <svg class="icon"><use href="#i-arrow-right"/></svg></a></div>
+        <div class="btn-spec"><div class="k">Primary · gold</div><a class="btn btn-gold">Issue QR pass</a></div>
+        <div class="btn-spec"><div class="k">Secondary</div><a class="btn btn-outline">View programme</a></div>
+        <div class="btn-spec"><div class="k">Ghost</div><a class="btn btn-ghost">Cancel</a></div>
+        <div class="btn-spec"><div class="k">Destructive</div><a class="btn btn-danger-outline">Void pass</a></div>
+        <div class="btn-spec"><div class="k">Disabled</div><a class="btn" disabled>Unavailable</a></div>
+      </div>
+      <div class="sizes">
+        <div class="sz"><div class="b" style="width:96px;height:34px;font-size:9px">Small</div><span class="l">34px</span></div>
+        <div class="sz"><div class="b" style="width:110px;height:44px">Default</div><span class="l">44px</span></div>
+        <div class="sz"><div class="b" style="width:128px;height:50px;font-size:11px">Large</div><span class="l">50px</span></div>
+        <div class="sz"><div class="b" style="width:44px;height:44px;font-size:15px">+</div><span class="l">icon 44</span></div>
+      </div>
+      <div class="focus-sample"><div class="fake">Focus ring · ink 2px + 2px offset</div><span class="l">:focus-visible</span></div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <section class="sec split" style="height:312px; padding-top:18px; box-sizing:border-box">
+    <div>
+      <div class="sec-head"><div class="left"><span class="num">04</span><h2>Fields &amp; status</h2></div><div class="note">Labels are always visible · errors are text + border</div></div>
+      <div class="field-grid">
+        <div class="field"><div class="label">Email</div><div class="input placeholder">you@example.com</div><div class="help">Use the address on your registration.</div></div>
+        <div class="field"><div class="label">Email · focus</div><div class="input focus">you@example.com</div><div class="help">2px ink ring, 2px offset.</div></div>
+        <div class="field"><div class="label">Phone</div><div class="input error">+91 98765 4321</div><div class="error-text">Enter a valid Indian mobile number.</div></div>
+        <div class="field"><div class="label">Category</div><div class="input select">Student <svg class="icon-sm" style="margin-left:auto;color:var(--muted)"><use href="#i-chevron-down"/></svg></div><div class="help">Student · Researcher · Professional · Speaker.</div></div>
+      </div>
+      <div class="checks"><span class="check on"><svg><use href="#i-check"/></svg></span><div><div class="t">I consent to face verification</div><div class="d">Required for arrival · purpose limited to event access.</div></div></div>
+      <div class="badges">
+        <span class="pill pill-navy"><span class="dot"></span> Registered</span><span class="pill pill-teal"><span class="dot"></span> Arrived</span><span class="pill pill-amber"><span class="dot"></span> Pending</span><span class="pill pill-red"><span class="dot"></span> Failed</span><span class="pill pill-grey"><span class="dot"></span> Offline</span>
+      </div>
+    </div>
+    <div>
+      <div class="sec-head"><div class="left"><span class="num">05</span><h2>Space, radius, depth</h2></div><div class="note">4px base grid</div></div>
+      <div class="spacing">
+        <div class="space"><i style="width:4px"></i><span>4</span></div><div class="space"><i style="width:8px"></i><span>8</span></div><div class="space"><i style="width:12px"></i><span>12</span></div><div class="space"><i style="width:16px"></i><span>16</span></div><div class="space"><i style="width:24px"></i><span>24</span></div><div class="space"><i style="width:32px"></i><span>32</span></div><div class="space"><i style="width:48px"></i><span>48</span></div><div class="space"><i style="width:64px"></i><span>64</span></div>
+      </div>
+      <div class="radii">
+        <div class="r" style="border-radius:4px">4</div><div class="r" style="border-radius:8px">8</div><div class="r" style="border-radius:12px">12</div><div class="r" style="border-radius:20px">20</div><div class="r" style="border-radius:28px">28</div><div class="r" style="border-radius:999px">pill</div>
+      </div>
+      <div class="elev"><div class="e sm">shadow-sm</div><div class="e md">shadow-md</div><div class="e lg">shadow-lg</div></div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <section class="sec split" style="height:270px; padding-top:18px; box-sizing:border-box">
+    <div>
+      <div class="sec-head"><div class="left"><span class="num">06</span><h2>Icons &amp; focus</h2></div><div class="note">1.5px stroke · 20/24px · Lucide-compatible</div></div>
+      <div class="iconrow">
+        <span class="iconbox"><svg class="icon"><use href="#i-calendar"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-ticket"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-scan"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-users"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-chart"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-wifi-off"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-check"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-alert"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-shield"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-scan"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-download"/></svg></span><span class="iconbox"><svg class="icon"><use href="#i-search"/></svg></span>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:14px; align-items:center">
+        <div style="flex:1;border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:8px 10px;display:flex;align-items:center;gap:8px"><span class="pill pill-navy" style="height:21px;font-size:8px;padding:0 7px"><span class="dot"></span> 2px focus</span><span style="font-size:8.5px;color:var(--muted)">Ink ring on light surfaces; gold ring on ink.</span></div>
+        <div style="border:1px solid var(--ink-900);box-shadow:0 0 0 2px var(--paper), 0 0 0 4px var(--ink-900);border-radius:5px;height:30px;display:grid;place-items:center;padding:0 12px;font-size:9px">Focused</div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-head"><div class="left"><span class="num">07</span><h2>Motion</h2></div><div class="note">Purposeful, short, interruptible</div></div>
+      <div class="motion">
+        <div class="chips"><span class="chip">fast · 120ms</span><span class="chip">base · 180ms</span><span class="chip">slow · 240ms</span><span class="chip">ease · cubic-bezier(.2,.8,.2,1)</span></div>
+        <div class="curve">
+          <svg viewBox="0 0 260 48" fill="none">
+            <path d="M4 44H256M4 44V4" stroke="rgba(11,31,58,.14)" stroke-width="1"/>
+            <path d="M8 42 C54 42 70 8 150 8 C200 8 230 12 252 14" stroke="#C9A227" stroke-width="1.6"/>
+            <circle cx="150" cy="8" r="2.4" fill="#0E7C7B"/>
+          </svg>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:10px; font-size:8.5px; color:var(--muted); line-height:1.5">
+          <svg class="icon-sm" style="color:var(--teal-600);flex:none"><use href="#i-check"/></svg>
+          <span>Respect <b style="color:var(--ink-900)">prefers-reduced-motion</b>. Never animate camera, QR or biometric results. Motion explains hierarchy, not decoration.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <section class="sec split" style="height:278px; padding-top:18px; box-sizing:border-box">
+    <div>
+      <div class="sec-head"><div class="left"><span class="num">08</span><h2>Brand lockups</h2></div><div class="note">Event mark is typographic + Konark geometry · host logos are placeholders</div></div>
+      <div class="brandgrid">
+        <div class="brandcard dark">
+          <div class="mark sm on-dark"><svg><use href="#i-konark"/></svg></div>
+          <div class="txt"><div class="a">ODISHA AI SYMPOSIUM</div><div class="b">SOA UNIVERSITY · 2026</div><div class="c">Primary event lockup</div></div>
+        </div>
+        <div class="brandcard">
+          <div class="mark sm"><svg><use href="#i-konark"/></svg></div>
+          <div class="txt"><div class="a">In partnership with</div><div class="b">SOA UNIVERSITY · AIC FOR INNOVATION CENTER</div><div class="c">Co-brand lockup · placeholder</div></div>
+        </div>
+      </div>
+      <div class="brandnote"><b>Rules</b> Never stretch, recolor or place the event mark on a busy photo. Minimum clear space equals one wheel diameter. Co-brand lockups use a single 1px rule, not a logo salad.</div>
+      <div class="a11y"><span>AA contrast</span><span>Visible focus</span><span>44px targets</span><span>Reduced motion</span><span>No colour-only status</span></div>
+    </div>
+    <div>
+      <div class="sec-head"><div class="left"><span class="num">09</span><h2>Imagery rules</h2></div><div class="note">Academic, local, restrained</div></div>
+      <div class="imggrid">
+        <div class="imgtile geo"><div class="k" style="color:var(--gold-500)">Geometry</div><div class="d">Konark wheel as line work. One per view, 8–14% opacity.</div></div>
+        <div class="imgtile duo"><div class="k">Portraits</div><div class="d">Authorised duotone portraits only. No stock faces.</div></div>
+        <div class="imgtile no"><div class="k" style="color:var(--red-600)">Avoid</div><div class="d">Robots, brains, circuit boards, temple clipart.</div></div>
+      </div>
+      <div class="brandnote"><b>Photography</b> Use real event and campus photography when available, with signed consent. Placeholder blocks must be labelled, never passed off as speakers.</div>
+    </div>
+  </section>
+
+  <div class="foot"><span><b>Odisha AI Symposium 2026</b> · Design foundations v1.0 · Tokens are implementation-ready</span><span>Ink #0B1F3A · Ivory #F7F3EA · Gold #C9A227 · Teal #0E7C7B</span></div>
+</div>
+<script src="mock.js"></script>
+</body>
+</html>

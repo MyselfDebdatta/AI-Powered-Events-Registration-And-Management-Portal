@@ -1,0 +1,25 @@
+# Conservative backend lint baseline for S0.
+#
+# The current tree predates linting and has long lines, unused imports and
+# legacy formatting. S0 must be green without a mass reformat, so this config
+# selects only syntax errors, undefined names, import-star/import-order
+# hazards and other correctness rules that cannot be auto-fixed into a
+# behaviour change. Broaden the ruleset stage by stage, not in one sweep.
+
+target-version = "py311"
+line-length = 120
+
+exclude = [
+    ".venv",
+    "__pycache__",
+    "fixtures",
+    "uploads",
+]
+
+[lint]
+select = [
+    "E9",   # syntax / IO errors
+    "F63",  # invalid print/syntax constructs
+    "F7",   # statements that cannot work as written (undefined names, bad returns)
+    "F82",  # undefined names in __all__ / annotations
+]

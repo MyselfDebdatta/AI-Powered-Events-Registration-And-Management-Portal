@@ -1,0 +1,90 @@
+name: backend
+
+on:
+  push:
+    branches: [main, debdatta/development]
+    paths:
+      - "backend/**"
+      - "docs/**"
+      - "Backend-Implementation-Plan.md"
+      - ".github/workflows/backend.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - "docs/**"
+      - "Backend-Implementation-Plan.md"
+      - ".github/workflows/backend.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: pytest, ruff and migration check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: geekai
+          POSTGRES_PASSWORD: geekai
+          POSTGRES_DB: geekai
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U geekai -d geekai"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      DATABASE_URL: postgresql+asyncpg://geekai:geekai@localhost:5432/geekai
+      # Opt in to DB-dependent tests against the disposable pgvector service.
+      GEEKAI_TEST_DB: "1"
+      SECRET_KEY: ci-only-secret-not-for-production
+      CORS_ORIGINS: http://localhost:5173
+      # Static path on the Ubuntu runner. The `runner` context is not allowed
+      # in job-level env, only in step-level env.
+      UPLOAD_DIR: /tmp/geekai-uploads
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Verify migrations reach head
+        run: python -m alembic upgrade head
+
+      - name: Run pytest
+        run: python -m pytest -q
+
+      - name: Run ruff
+        run: python -m ruff check .
+
+      # Non-blocking on purpose: the production dependency set is older than
+      # this baseline and may contain advisories that S0 cannot fix without a
+      # dependency upgrade. The step still records the audit output so S1/S3
+      # can triage it. Do not make this blocking until the audit is clean or
+      # an approved exception list exists.
+      - name: Dependency audit (non-blocking)
+        continue-on-error: true
+        run: python -m pip_audit -r requirements.txt

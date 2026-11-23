@@ -1,0 +1,85 @@
+"""Application settings loaded from environment variables.
+
+Stage S1 removes the seed-admin defaults and the usable database/JWT
+placeholders. Every placeholder below is intentionally unusable in
+production; real values must come from the environment or a secrets vault.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import List
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    # Database — placeholder is intentionally unusable.
+    DATABASE_URL: str = "postgresql+asyncpg://<user>:<password>@localhost:5432/geekai"
+
+    # JWT — placeholder is intentionally unusable. Generate a real secret and
+    # supply it via the environment or a secrets manager.
+    SECRET_KEY: str = "<generate-a-random-value>"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
+
+    # One-time bootstrap token for creating the first admin user. Must be set
+    # in the environment before the first boot; there is no usable default.
+    BOOTSTRAP_TOKEN: str = "<set-BOOTSTRAP_TOKEN-in-the-environment>"
+
+    # Active event code used for JWT `event_ids` scope checks.
+    ACTIVE_EVENT_CODE: str = "oas-2026"
+
+    # QR signing-key placeholders (stage S5 will use real values). These are
+    # intentionally unusable placeholders — never a real signing key.
+    QR_SIGNING_KEY: str = "<set-QR_SIGNING_KEY-in-the-environment>"
+    QR_KEY_ID: str = "<set-QR_KEY_ID-in-the-environment>"
+    QR_ISSUER: str = "geekai-hub-01"
+
+    # CORS
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+
+    @property
+    def cors_origin_list(self) -> List[str]:
+        return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+
+    # SMTP
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM_EMAIL: str = "noreply@geekai.in"
+    SMTP_USE_TLS: bool = True
+
+    @property
+    def smtp_configured(self) -> bool:
+        return bool(self.SMTP_HOST and self.SMTP_USER and self.SMTP_PASSWORD)
+
+    # Uploads
+    UPLOAD_DIR: str = "uploads"
+
+    @property
+    def photos_dir(self) -> Path:
+        p = Path(self.UPLOAD_DIR) / "photos"
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
+    @property
+    def qrcodes_dir(self) -> Path:
+        p = Path(self.UPLOAD_DIR) / "qrcodes"
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
+    # Bootstrap forced password change: tracked via password_changed_at on
+    # the users table (null = change required on next login). No column is
+    # added here; the migration creates it.
+
+
+settings = Settings()

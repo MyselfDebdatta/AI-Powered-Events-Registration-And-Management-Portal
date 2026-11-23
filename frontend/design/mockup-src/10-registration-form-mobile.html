@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10 — Registration form mobile</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  /* Compact phone frame so the PNG renders at 800px wide (2x of a 400px viewport). */
+  .phone-stage { width: 400px; height: 1000px; }
+  .phone { width: 380px; height: 920px; padding: 30px 16px; border-radius: 50px; }
+  .screen { width: 348px; height: 860px; border-radius: 34px; }
+  .island { width: 98px; height: 26px; top: 12px; }
+
+  .statusbar { height: 40px; padding: 0 22px; font-size: 11px; }
+  .status-icons { gap: 5px; }
+  .status-icons span:nth-child(2) { font-size: 9px; }
+
+  .apphead {
+    height: 50px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--line); background: rgba(247,243,234,.95); position: relative; z-index: 10;
+  }
+  .back { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+  .back .icon { width: 15px; height: 15px; }
+  .apphead .title { font-size: 13px; font-weight: 650; letter-spacing: -.01em; }
+  .apphead .right { display: flex; align-items: center; gap: 7px; }
+  .apphead .right .sub { font-size: 8px; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+
+  .scroll { position: absolute; top: 90px; left: 0; right: 0; bottom: 76px; overflow: hidden; padding: 10px 18px 12px; }
+
+  .hero h1 { font-size: 23px; line-height: 1.08; letter-spacing: -.03em; margin: 7px 0 0; }
+  .hero .lead { font-size: 10.5px; line-height: 1.45; color: var(--slate-700); margin: 8px 0 0; }
+  .hero .eyebrow { font-size: 8px; letter-spacing: .14em; }
+
+  .sec { margin-top: 11px; }
+  .sec-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .sec-head .num { font-family: var(--font-mono); font-size: 9px; color: var(--gold-700); letter-spacing: .06em; }
+  .sec-head h2 { font-size: 13px; letter-spacing: -.015em; margin: 0; }
+  .sec-head .aside { margin-left: auto; font-size: 8.5px; color: var(--muted); }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field + .field { margin-top: 6px; }
+  .label { font-size: 10px; }
+  .label .opt { font-size: 8.5px; color: var(--muted); font-weight: 500; }
+  .input, .select { height: 40px; font-size: 11.5px; border-radius: 7px; padding: 0 10px; }
+  .ph { color: #8B95A3; }
+  .input.gold { border-color: var(--gold-500); box-shadow: 0 0 0 2px rgba(201,162,39,.18); }
+  .help { font-size: 8.5px; color: var(--muted); }
+
+  .dropzone {
+    border: 1.5px dashed var(--sand-300); border-radius: 9px; background: #FCFAF5; padding: 10px 11px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .dropzone .up { width: 34px; height: 34px; border-radius: 50%; background: var(--gold-100); color: var(--gold-700); display: grid; place-items: center; flex: none; }
+  .dropzone .up .icon { width: 17px; height: 17px; }
+  .dropzone .t { font-size: 11px; font-weight: 650; color: var(--ink-900); }
+  .dropzone .s { font-size: 9px; color: var(--muted); margin-top: 2px; }
+  .camerarow { display: flex; gap: 7px; margin-top: 7px; }
+  .camerarow .btn { height: 32px; font-size: 10px; flex: 1; padding: 0 8px; }
+  .camerarow .btn .icon { width: 14px; height: 14px; }
+  .guidance { font-size: 9px; line-height: 1.4; color: var(--muted); margin: 7px 0 0; }
+
+  .consent { display: flex; align-items: flex-start; gap: 9px; }
+  .consent .t { font-size: 10px; font-weight: 650; color: var(--ink-900); line-height: 1.35; }
+  .consent .d { font-size: 9px; line-height: 1.4; color: var(--muted); margin-top: 3px; }
+  .consent .tag { height: 17px; font-size: 7.5px; padding: 0 6px; }
+  .consent a { color: var(--gold-700); font-weight: 650; text-decoration: underline; }
+
+  .bottom {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 76px; z-index: 20;
+    background: rgba(251,248,241,.98); border-top: 1px solid var(--line);
+    padding: 8px 18px 0;
+  }
+  .bottom .btn { width: 100%; height: 44px; font-size: 13px; }
+  .bottom .safe { height: 8px; }
+</style>
+</head>
+<body>
+<div class="phone-stage">
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen">
+      <div class="statusbar">
+        <span>9:41</span>
+        <div class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><span>5G</span><span class="battery"></span></div>
+      </div>
+
+      <div class="apphead">
+        <div class="back"><svg class="icon"><use href="#i-chevron-left"/></svg></div>
+        <div class="title">Registration</div>
+        <div class="right"><div class="mark sm"><svg><use href="#i-konark"/></svg></div><span class="sub">AIS 26</span></div>
+      </div>
+
+      <div class="scroll">
+        <section class="hero">
+          <div class="eyebrow">Registration · AIS 2026</div>
+          <h1>Register for the symposium.</h1>
+          <p class="lead">It takes about five minutes. Your pass is issued at the arrival desk after identity verification.</p>
+        </section>
+
+        <section class="sec">
+          <div class="sec-head"><span class="num">01</span><h2>Your details</h2><span class="aside">Required</span></div>
+          <div class="field"><label class="label">Full name</label><div class="input"><span class="ph">Asha Mohanty</span></div></div>
+          <div class="field"><label class="label">Email</label><div class="input gold"><span class="ph">asha@example.com</span></div></div>
+          <div class="field"><label class="label">Phone</label><div class="input"><span class="ph">+91 98765 4321</span></div></div>
+          <div class="field"><label class="label">Institution</label><div class="input"><span class="ph">Your college or university</span></div></div>
+          <div class="field"><label class="label">Category</label><div class="select"><span>Student</span><svg class="icon-sm" style="margin-left:auto;color:var(--muted)"><use href="#i-chevron-down"/></svg></div><div class="help">Student · Researcher · Professional · Speaker.</div></div>
+        </section>
+
+        <section class="sec">
+          <div class="sec-head"><span class="num">02</span><h2>Your photo</h2><span class="aside">For arrival verification</span></div>
+          <div class="dropzone">
+            <span class="up"><svg class="icon"><use href="#i-upload"/></svg></span>
+            <div><div class="t">Add your photo</div><div class="s">One clear face · 640 × 640 px minimum</div></div>
+          </div>
+          <div class="camerarow">
+            <button class="btn btn-outline"><svg class="icon"><use href="#i-camera"/></svg> Use camera</button>
+            <button class="btn btn-soft"><svg class="icon"><use href="#i-upload"/></svg> Choose file</button>
+          </div>
+          <p class="guidance">Use a recent photo with one clear face, a plain background and good lighting.</p>
+        </section>
+
+        <section class="sec">
+          <div class="sec-head"><span class="num">03</span><h2>Consent and access</h2></div>
+          <div class="consent">
+            <span class="check on"><svg><use href="#i-check"/></svg></span>
+            <div>
+              <div class="t">I consent to biometric face verification <span class="tag tag-gold">v1.0</span></div>
+              <div class="d">For arrival identity verification only. Privacy notice at <a href="/privacy">/privacy</a>.</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="bottom">
+        <button class="btn btn-ink">Submit registration <svg class="icon"><use href="#i-arrow-right"/></svg></button>
+        <div class="safe"></div>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+</div>
+<script src="mock.js"></script>
+</body>
+</html>

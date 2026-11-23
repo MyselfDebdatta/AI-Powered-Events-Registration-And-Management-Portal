@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>06 — Volunteer arrival desk</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .appbar { height: 60px; flex:none; background:var(--ink-900); color:var(--ivory-100); display:flex; align-items:center; justify-content:space-between; padding:0 24px; }
+  .appbar .left { display:flex; align-items:center; gap:14px; }
+  .appbar .divider { width:1px; height:22px; background:rgba(247,243,234,.18); }
+  .appbar .desk { font-size:12.5px; font-weight:650; letter-spacing:.01em; }
+  .appbar .loc { font-size:9.5px; color:rgba(247,243,234,.56); margin-top:2px; letter-spacing:.05em; text-transform:uppercase; }
+  .appbar .right { display:flex; align-items:center; gap:14px; }
+  .appbar .who { font-size:10.5px; color:rgba(247,243,234,.62); text-align:right; line-height:1.35; }
+  .appbar .who b { display:block; color:var(--ivory-100); font-size:11.5px; font-weight:600; }
+  .appbar .avatar { width:30px; height:30px; border-radius:50%; border:1px solid rgba(247,243,234,.22); display:grid; place-items:center; font-size:10px; font-weight:700; color:var(--ivory-100); background:rgba(247,243,234,.07); }
+  .stepperbar { height:56px; flex:none; background:var(--paper); border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; padding:0 24px; }
+  .steps { display:flex; align-items:center; gap:0; }
+  .step { display:flex; align-items:center; gap:9px; padding:0 24px; border-right:1px solid var(--line); height:24px; font-size:12px; color:var(--muted); }
+  .step:first-child { padding-left:0; }
+  .step:last-child { border-right:0; }
+  .step .n { width:22px; height:22px; border-radius:50%; border:1px solid var(--line-strong); display:grid; place-items:center; font-family:var(--font-mono); font-size:9px; color:var(--muted); }
+  .step.done { color:var(--ink-900); font-weight:600; }
+  .step.done .n { background:var(--gold-500); border-color:var(--gold-500); color:var(--ink-900); }
+  .step.current { color:var(--ink-900); font-weight:650; }
+  .step.current .n { border:2px solid var(--ink-900); color:var(--ink-900); background:var(--paper); }
+  .stepperbar .right { display:flex; align-items:center; gap:16px; font-size:10.5px; color:var(--muted); }
+  .stepperbar .right b { color:var(--ink-900); }
+  .workspace { flex:1; min-height:0; padding:16px 24px 18px; display:grid; grid-template-columns: 1.36fr 1fr; gap:16px; background:var(--ivory-100); }
+  .col { min-width:0; display:flex; flex-direction:column; gap:14px; min-height:0; }
+  .panel { background:var(--paper); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow-sm); overflow:hidden; }
+  .panel-head { height:44px; padding:0 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); }
+  .panel-head h2 { font-size:12.5px; margin:0; letter-spacing:-.005em; }
+  .panel-head .meta { display:flex; align-items:center; gap:8px; font-size:9.5px; color:var(--muted); }
+  .camera-card { flex:1; display:flex; flex-direction:column; min-height:0; }
+  .camera { position:relative; background:#0C2342; flex:1; min-height:0; margin:0; overflow:hidden; }
+  .camera svg.feed { width:100%; height:100%; display:block; }
+  .camera .chip { position:absolute; top:12px; left:12px; height:24px; display:inline-flex; align-items:center; gap:6px; padding:0 9px; border-radius:5px; background:rgba(11,31,58,.72); border:1px solid rgba(247,243,234,.18); color:var(--ivory-100); font-size:9px; letter-spacing:.06em; }
+  .camera .chip .dot { width:6px; height:6px; border-radius:50%; background:var(--teal-500); }
+  .camera .quality { position:absolute; top:12px; right:12px; }
+  .camera .hint { position:absolute; left:50%; bottom:12px; transform:translateX(-50%); background:rgba(11,31,58,.74); border:1px solid rgba(247,243,234,.16); color:rgba(247,243,234,.78); font-size:9.5px; padding:5px 10px; border-radius:5px; white-space:nowrap; }
+  .camera-controls { height:58px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; border-top:1px solid var(--line); }
+  .camera-controls .left { display:flex; align-items:center; gap:12px; }
+  .status-dot { display:flex; align-items:center; gap:6px; font-size:9.5px; color:var(--teal-600); font-weight:600; }
+  .status-dot i { width:6px; height:6px; border-radius:50%; background:var(--teal-500); }
+  .camera-controls .help { font-size:9px; color:var(--muted); max-width:230px; line-height:1.4; }
+  .recent { height:272px; display:flex; flex-direction:column; }
+  .recent .panel-head { height:42px; }
+  .recent .table-wrap { padding:0 6px 6px; overflow:hidden; }
+  .recent table { width:100%; }
+  .syncnote { height:30px; background:var(--amber-100); border-top:1px solid rgba(180,83,9,.18); display:flex; align-items:center; justify-content:space-between; padding:0 14px; font-size:9.5px; color:#7C3A06; }
+  .syncnote .left { display:flex; align-items:center; gap:7px; font-weight:600; }
+  .syncnote a { color:#7C3A06; text-decoration:underline; text-underline-offset:2px; }
+  .verify { flex:1; display:flex; flex-direction:column; min-height:0; }
+  .verify-body { padding:16px 18px 14px; display:flex; flex-direction:column; gap:0; overflow:hidden; }
+  .person { display:flex; align-items:center; gap:12px; }
+  .person .pic { width:48px; height:48px; border-radius:10px; background:linear-gradient(145deg,#E9DFCB,#D8C7AA); display:grid; place-items:center; color:#7A6B52; flex:none; }
+  .person .pic svg { width:22px; height:22px; }
+  .person h1 { font-size:18px; margin:0; letter-spacing:-.02em; line-height:1.1; }
+  .person .sub { display:flex; align-items:center; gap:7px; margin-top:4px; font-size:9.5px; color:var(--muted); }
+  .person .sub .mono { font-size:10px; color:var(--slate-700); }
+  .match { margin-top:13px; display:grid; grid-template-columns: 86px 1fr; gap:14px; align-items:center; padding:11px 13px; background:var(--teal-100); border:1px solid rgba(14,124,123,.18); border-radius:9px; }
+  .match .pct { font-family:var(--font-display); font-size:27px; line-height:1; font-weight:650; color:var(--teal-600); letter-spacing:-.03em; }
+  .match .k { font-size:8.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--teal-600); font-weight:700; }
+  .match .bar { height:5px; border-radius:4px; background:rgba(14,124,123,.16); overflow:hidden; margin-top:7px; }
+  .match .bar i { display:block; height:100%; width:98%; background:var(--teal-500); border-radius:4px; }
+  .match .note { font-size:8.5px; color:var(--teal-600); margin-top:5px; }
+  .data { margin-top:10px; }
+  .drow { display:grid; grid-template-columns: 84px 1fr; gap:12px; padding:7px 0; border-bottom:1px solid var(--line); align-items:center; }
+  .drow .k { font-size:8.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .drow .v { font-size:10.5px; color:var(--slate-700); }
+  .drow .v b { color:var(--ink-900); font-weight:600; }
+  .consent { display:flex; gap:9px; align-items:flex-start; padding:9px 0 0; }
+  .consent .check { width:17px; height:17px; margin-top:1px; }
+  .consent .t { font-size:10px; font-weight:600; color:var(--ink-900); }
+  .consent .d { font-size:8.5px; color:var(--muted); margin-top:2px; }
+  .after { margin-top:12px; padding-top:11px; border-top:1px solid var(--line); }
+  .after .k { font-size:8.5px; font-weight:700; letter-spacing:.10em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .arow { display:flex; gap:9px; padding:7px 0; border-bottom:1px solid var(--line); align-items:flex-start; }
+  .arow > span { width:18px; height:18px; border-radius:50%; border:1px solid var(--line-strong); display:grid; place-items:center; font-family:var(--font-mono); font-size:8px; color:var(--muted); flex:none; margin-top:1px; }
+  .arow b { display:block; font-size:10px; font-weight:600; color:var(--ink-900); }
+  .arow p { margin:2px 0 0; font-size:8.5px; color:var(--muted); line-height:1.4; }
+  .verify-actions { margin-top:auto; padding:12px 18px 14px; border-top:1px solid var(--line); background:#FCF9F2; }
+  .verify-actions .primary { width:100%; height:46px; font-size:13.5px; }
+  .verify-actions .secondary { display:flex; gap:8px; margin-top:8px; }
+  .verify-actions .secondary .btn { flex:1; height:36px; font-size:10.5px; }
+  .verify-actions .manual { text-align:center; margin-top:8px; font-size:9.5px; color:var(--muted); }
+  .verify-actions .manual a { color:var(--ink-900); font-weight:600; text-decoration:underline; text-underline-offset:2px; }
+  .audit { padding:10px 18px 12px; border-top:1px solid var(--line); display:flex; align-items:center; gap:7px; font-size:8.5px; color:var(--muted); }
+  .audit .icon { color:var(--teal-600); }
+</style>
+</head>
+<body>
+<div class="browser">
+  <div class="chrome">
+    <div class="chrome-dots"><i class="chrome-dot"></i><i class="chrome-dot"></i><i class="chrome-dot"></i></div>
+    <div class="chrome-url"><svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>hub.local/arrival</div>
+    <div class="chrome-right"><span></span><span></span><span></span></div>
+  </div>
+
+  <div class="appbar">
+    <div class="left">
+      <div class="mark sm on-dark"><svg><use href="#i-konark"/></svg></div>
+      <div><div class="desk">Arrival desk</div><div class="loc">SOA University · 2026</div></div>
+      <div class="divider"></div>
+      <span class="tag on-dark">Desk 02</span>
+    </div>
+    <div class="right">
+      <span class="pill pill-amber"><span class="dot"></span> Offline — 3 pending</span>
+      <div class="who"><b>Volunteer name</b>Arrival desk</div>
+      <div class="avatar">VN</div>
+    </div>
+  </div>
+
+  <div class="stepperbar">
+    <div class="steps">
+      <div class="step done"><span class="n"><svg class="icon" style="width:11px;height:11px"><use href="#i-check"/></svg></span> Find participant</div>
+      <div class="step current"><span class="n">2</span> Verify identity</div>
+      <div class="step"><span class="n">3</span> Issue pass</div>
+    </div>
+    <div class="right"><svg class="icon-sm" style="color:var(--gold-600)"><use href="#i-shield"/></svg> Volunteer confirmation required · <b>Station 02</b></div>
+  </div>
+
+  <main class="workspace">
+    <div class="col">
+      <section class="panel camera-card">
+        <div class="panel-head">
+          <h2>Live capture</h2>
+          <div class="meta"><span class="pill pill-teal" style="height:21px;font-size:9px;padding:0 8px"><span class="dot"></span> Camera ready</span><span class="mono">CAM-02</span></div>
+        </div>
+        <div class="camera">
+          <svg class="feed" viewBox="0 0 760 430" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="camBg" cx="50%" cy="34%" r="72%">
+                <stop offset="0" stop-color="#1A355A"/><stop offset="1" stop-color="#0A1D37"/>
+              </radialGradient>
+              <linearGradient id="figure" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#2A466C"/><stop offset="1" stop-color="#1A3354"/>
+              </linearGradient>
+            </defs>
+            <rect width="760" height="430" fill="url(#camBg)"/>
+            <g opacity=".22" stroke="#7EA3C4" stroke-width="1" fill="none">
+              <path d="M0 107h760M0 215h760M0 322h760M152 0v430M304 0v430M456 0v430M608 0v430"/>
+            </g>
+            <circle cx="380" cy="154" r="186" fill="rgba(56,189,248,.035)" stroke="rgba(56,189,248,.10)"/>
+            <path d="M214 430c8-92 73-150 166-150s158 58 166 150" fill="url(#figure)"/>
+            <circle cx="380" cy="166" r="74" fill="#2A466C"/>
+            <circle cx="380" cy="166" r="74" fill="none" stroke="rgba(247,243,234,.09)"/>
+            <g stroke="var(--gold)" stroke-width="1.5" fill="none" opacity=".8">
+              <path d="M300 96h-30v-30M460 96h30v-30M300 236h-30v30M460 236h30v30"/>
+            </g>
+            <rect x="286" y="62" width="188" height="214" rx="54" stroke="rgba(201,162,39,.55)" stroke-width="1.2" stroke-dasharray="5 5" fill="none"/>
+            <g fill="rgba(247,243,234,.38)" font-family="Segoe UI, sans-serif" font-size="10" letter-spacing="2">
+              <text x="28" y="410">FRAME 02 · 640×480</text>
+              <text x="640" y="410">LIVE</text>
+            </g>
+          </svg>
+          <span class="chip"><span class="dot"></span> LIVE · 30 FPS</span>
+          <span class="chip quality" style="left:auto;right:12px;top:12px;background:rgba(14,124,123,.18);border-color:rgba(142,216,212,.28);color:#9FE0DC">QUALITY GOOD</span>
+          <div class="hint">Ask the participant to face the camera and remove glasses.</div>
+        </div>
+        <div class="camera-controls">
+          <div class="left"><a class="btn btn-outline btn-sm" href="#"><svg class="icon"><use href="#i-refresh"/></svg> Retake photo</a><span class="status-dot"><i></i> Camera ready</span></div>
+          <div class="help">No photo leaves this station until the pass is issued.<br>Offline capture is supported.</div>
+        </div>
+      </section>
+
+      <section class="panel recent">
+        <div class="panel-head">
+          <h2>Recent arrivals</h2>
+          <div class="meta"><a href="#" style="font-weight:650;color:var(--ink-900)">View all</a></div>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Participant</th><th>ID</th><th>Time</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="strong">Participant name</td><td class="mono">AIS26-P-0247</td><td>10:38</td><td><span class="pill pill-teal" style="height:21px;font-size:9px;padding:0 8px"><span class="dot"></span> Pass issued</span></td></tr>
+              <tr><td class="strong">Participant name</td><td class="mono">AIS26-P-0246</td><td>10:37</td><td><span class="pill pill-teal" style="height:21px;font-size:9px;padding:0 8px"><span class="dot"></span> Pass issued</span></td></tr>
+              <tr><td class="strong">Participant name</td><td class="mono">AIS26-P-0245</td><td>10:36</td><td><span class="pill pill-amber" style="height:21px;font-size:9px;padding:0 8px"><span class="dot"></span> Pending sync</span></td></tr>
+              <tr><td class="strong">Participant name</td><td class="mono">AIS26-P-0244</td><td>10:34</td><td><span class="pill pill-teal" style="height:21px;font-size:9px;padding:0 8px"><span class="dot"></span> Pass issued</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="syncnote"><span class="left"><svg class="icon-sm"><use href="#i-wifi-off"/></svg> Offline — 3 arrivals pending sync</span><a href="#">Retry now</a></div>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="panel verify">
+        <div class="panel-head">
+          <h2>Verify identity</h2>
+          <span class="pill pill-navy" style="height:21px;font-size:9px;padding:0 8px">Synced record</span>
+        </div>
+        <div class="verify-body">
+          <div class="person">
+            <div class="pic"><svg><use href="#i-user"/></svg></div>
+            <div><h1>Participant Name</h1><div class="sub"><span class="mono">AIS26-P-0248</span><span>·</span><span>Student</span><span>·</span><span>SOA University</span></div></div>
+          </div>
+
+          <div class="match">
+            <div><div class="pct">98%</div><div class="k">Match</div></div>
+            <div><div class="k">Face match confidence</div><div class="bar"><i></i></div><div class="note">Above threshold · volunteer confirmation still required</div></div>
+          </div>
+
+          <div class="data">
+            <div class="drow"><span class="k">Email</span><span class="v">you@example.com</span></div>
+            <div class="drow"><span class="k">Institution</span><span class="v">Institution placeholder</span></div>
+            <div class="drow"><span class="k">Category</span><span class="v"><b>Student</b></span></div>
+            <div class="drow"><span class="k">Record</span><span class="v"><span class="pill pill-teal" style="height:19px;font-size:8.5px;padding:0 7px"><span class="dot"></span> Synced</span> <span style="color:var(--muted);margin-left:5px">Ready for arrival</span></span></div>
+          </div>
+
+          <div class="consent">
+            <span class="check on"><svg><use href="#i-check"/></svg></span>
+            <div><div class="t">Participant consented to face verification</div><div class="d">Consent recorded at registration · purpose: event access only</div></div>
+          </div>
+
+          <div class="after">
+            <div class="k">After issuing</div>
+            <div class="arow"><span>1</span><div><b>Pass appears on screen</b><p>Show it, print a badge, or send it to the participant.</p></div></div>
+            <div class="arow"><span>2</span><div><b>Welcome email is queued</b><p>Sends automatically when the hub reconnects.</p></div></div>
+            <div class="arow" style="border-bottom:0"><span>3</span><div><b>Status becomes QR issued</b><p>The pass is now ready to scan at entry.</p></div></div>
+          </div>
+        </div>
+
+        <div class="verify-actions">
+          <a href="#" class="btn btn-gold primary"><svg class="icon"><use href="#i-ticket"/></svg> Issue QR pass</a>
+          <div class="secondary"><a href="#" class="btn btn-outline"><svg class="icon"><use href="#i-printer"/></svg> Print badge</a><a href="#" class="btn btn-outline"><svg class="icon"><use href="#i-user"/></svg> View record</a></div>
+          <div class="manual">Face match wrong or camera unavailable? <a href="#">Use manual fallback</a></div>
+        </div>
+        <div class="audit"><svg class="icon-sm"><use href="#i-shield"/></svg> Every verification and pass issue is written to the audit log.</div>
+      </section>
+    </div>
+  </main>
+</div>
+<script src="mock.js"></script>
+</body>
+</html>

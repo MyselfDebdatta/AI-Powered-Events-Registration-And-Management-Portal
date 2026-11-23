@@ -1,0 +1,32 @@
+# Git / VCS
+.git
+.gitignore
+
+# Python caches and virtualenvs
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+ENV/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Secrets and local config — never bake into an image layer
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local data that must not be in an image
+uploads/
+fixtures/generated/
+*.db
+*.sqlite
+*.sqlite3
+
+# Tests and dev-only docs are not needed in the runtime image
+tests/
+README.md
+Makefile

@@ -1,0 +1,75 @@
+# =============================================================================
+# GeekAI — .gitignore
+# =============================================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+env/
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+.npm
+dist/
+
+# Environment files & credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local uploads & cache (preserve directory structure via .gitkeep)
+uploads/*
+!uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/uploads/photos/*
+!backend/uploads/photos/.gitkeep
+backend/uploads/qrcodes/*
+!backend/uploads/qrcodes/.gitkeep
+face-checkin/cache/*
+!face-checkin/cache/.gitkeep
+face-checkin/cache/photos/*
+!face-checkin/cache/photos/.gitkeep
+
+# Backend test/lint caches
+.pytest_cache/
+.ruff_cache/
+
+# Generated synthetic fixtures (regenerate with backend/scripts/generate_fixtures.py)
+backend/fixtures/generated/
+
+# InsightFace models download cache (root only — do not ignore backend/app/models/)
+.insightface/
+/models/
+
+# Database data volume
+postgres_data/
+
+# Logs
+*.log
+
+# Local visual-QA screenshots (frontend/scripts/visual-qa.mjs output)
+.qa/
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local completion-report PDF (not shared in GitHub)
+Frontend-Redesign-Completion.pdf
+Frontend-Redesign-Completation.pdf

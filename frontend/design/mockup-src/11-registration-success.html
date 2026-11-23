@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11 — Registration success</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  html, body { height: auto; }
+  .browser { height: 900px; overflow: hidden; }
+
+  .wrap { width: 760px; max-width: calc(100vw - 48px); margin: 0 auto; }
+
+  .top { height: 64px; background: var(--ivory-100); border-bottom: 1px solid var(--line); }
+  .top .wrap { height: 64px; display: flex; align-items: center; justify-content: space-between; }
+  .top .lockup .name { font-size: 10.5px; }
+  .top .right { display: flex; align-items: center; gap: 14px; font-size: 11px; color: var(--muted); }
+  .top .right a { font-weight: 650; color: var(--ink-900); }
+
+  .main { height: 796px; position: relative; overflow: hidden; padding: 44px 0 0; }
+  .main::before { content: ""; position: absolute; width: 420px; height: 420px; border: 1px solid rgba(201,162,39,.12); border-radius: 50%; right: -180px; top: -250px; }
+  .main::after { content: ""; position: absolute; width: 300px; height: 300px; border: 1px solid rgba(14,124,123,.09); border-radius: 50%; left: -170px; bottom: -190px; }
+
+  .crumbs { display: flex; align-items: center; gap: 8px; font-size: 10px; color: var(--muted); letter-spacing: .04em; margin-bottom: 16px; }
+  .crumbs b { color: var(--ink-900); font-weight: 600; }
+
+  .success {
+    position: relative; background: var(--paper); border: 1px solid var(--line);
+    border-radius: 14px; box-shadow: var(--shadow-md); padding: 32px 44px 30px; text-align: center;
+  }
+  .success .badge {
+    width: 58px; height: 58px; border-radius: 50%; background: var(--teal-100); color: var(--teal-600);
+    display: grid; place-items: center; margin: 0 auto 16px;
+  }
+  .success .badge .icon-lg { width: 28px; height: 28px; }
+  .success .eyebrow { font-size: 10px; }
+  .success h1 { font-size: 34px; line-height: 1.08; letter-spacing: -.035em; margin: 8px 0 0; }
+  .success .sub { font-size: 13px; line-height: 1.55; color: var(--slate-700); max-width: 520px; margin: 10px auto 0; }
+
+  .idbox { margin-top: 20px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 14px 0; }
+  .idbox .k { font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .idbox .chip {
+    display: inline-flex; align-items: center; gap: 10px; margin-top: 8px; height: 36px; padding: 0 13px;
+    border-radius: 7px; border: 1px solid var(--sand-200); background: var(--sand-100);
+    font-family: var(--font-mono); font-size: 12px; color: var(--ink-900); letter-spacing: .01em;
+  }
+  .idbox .chip .icon-sm { color: var(--muted); }
+
+  .actions { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
+  .actions .btn { height: 44px; }
+  .actions .link { font-size: 12px; font-weight: 650; color: var(--ink-900); display: inline-flex; align-items: center; gap: 6px; }
+  .actions .link .icon { width: 14px; height: 14px; }
+
+  .truth {
+    margin-top: 22px; display: flex; align-items: flex-start; gap: 10px; text-align: left;
+    border: 1px solid var(--sand-200); border-radius: 9px; background: var(--sand-100);
+    padding: 12px 14px; font-size: 11.5px; line-height: 1.5; color: #62553E;
+  }
+  .truth .icon-sm { color: var(--teal-600); margin-top: 2px; }
+
+  .steps { display: grid; grid-template-columns: 1fr 22px 1fr 22px 1fr; align-items: start; gap: 0; margin-top: 22px; }
+  .step .dot { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--sand-300); background: var(--paper); color: var(--gold-700); display: grid; place-items: center; margin: 0 auto 7px; font-family: var(--font-mono); font-size: 10px; }
+  .step.last .dot { border-color: var(--teal-500); background: var(--teal-100); color: var(--teal-600); }
+  .step .t { font-size: 11.5px; font-weight: 650; color: var(--ink-900); }
+  .step .d { font-size: 9.5px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+  .arrow { display: grid; place-items: center; height: 26px; color: var(--gold-600); }
+  .arrow .icon { width: 15px; height: 15px; }
+
+  .privacy {
+    display: flex; align-items: flex-start; gap: 9px; margin-top: 14px;
+    border: 1px solid var(--sand-200); border-radius: 9px; background: var(--sand-100);
+    padding: 11px 14px; font-size: 10.5px; line-height: 1.5; color: #62553E;
+  }
+  .privacy .icon-sm { color: var(--teal-600); margin-top: 1px; }
+  .privacy a { color: var(--gold-700); font-weight: 650; text-decoration: underline; }
+
+  .foot { height: 46px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="browser">
+  <div class="chrome">
+    <div class="chrome-dots"><i class="chrome-dot"></i><i class="chrome-dot"></i><i class="chrome-dot"></i></div>
+    <div class="chrome-url">
+      <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      ais2026.example/register/success
+    </div>
+    <div class="chrome-right"><span></span><span></span><span></span></div>
+  </div>
+
+  <header class="top">
+    <div class="wrap">
+      <div class="lockup">
+        <div class="mark sm"><svg><use href="#i-konark"/></svg></div>
+        <div><div class="name">Odisha AI Symposium</div><div class="sub">SOA University · 2026</div></div>
+      </div>
+      <div class="right"><span>Registration</span><a href="/register/status">Check status →</a></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="wrap">
+      <div class="crumbs"><span>Home</span><span>/</span><span>Register</span><span>/</span><b>Done</b></div>
+
+      <section class="success">
+        <div class="badge"><svg class="icon-lg"><use href="#i-check"/></svg></div>
+        <div class="eyebrow">Registration · AIS 2026</div>
+        <h1 class="h1">Registration received</h1>
+        <p class="sub">We have your form and photo. Keep the submission ID below if you need to check your status.</p>
+
+        <div class="idbox">
+          <div class="k">Submission ID</div>
+          <div class="chip">c1f0e6d2-7b3a-4f19-9c05-2ae8d41b6f30 <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+        </div>
+
+        <div class="actions">
+          <a href="/register/status" class="btn btn-ink">Check status <svg class="icon"><use href="#i-refresh"/></svg></a>
+          <a href="/register" class="link">Back to registration <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+        </div>
+
+        <div class="truth">
+          <svg class="icon-sm"><use href="#i-shield"/></svg>
+          <span>Your pass is issued at the arrival desk after identity verification. No QR code is sent by email before the event.</span>
+        </div>
+
+        <div class="steps">
+          <div class="step"><div class="dot">1</div><div class="t">Submit</div><div class="d">Your details and photo are received.</div></div>
+          <div class="arrow"><svg class="icon"><use href="#i-arrow-right"/></svg></div>
+          <div class="step"><div class="dot">2</div><div class="t">Review</div><div class="d">The team checks your registration.</div></div>
+          <div class="arrow"><svg class="icon"><use href="#i-arrow-right"/></svg></div>
+          <div class="step last"><div class="dot">3</div><div class="t">Pass issued at arrival</div><div class="d">Identity is verified at the desk.</div></div>
+        </div>
+      </section>
+
+      <div class="privacy">
+        <svg class="icon-sm"><use href="#i-shield"/></svg>
+        <span>Your details are used only for event registration and arrival verification. Privacy notice: <a href="/privacy">/privacy</a>.</span>
+      </div>
+    </div>
+  </main>
+
+  <div class="container-wide">
+    <div class="foot"><span>© 2026 Odisha AI Symposium · SOA University</span><span>Registration · AIS 2026</span></div>
+  </div>
+</div>
+<script src="mock.js"></script>
+</body>
+</html>

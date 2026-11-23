@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>09 — Registration form desktop</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  html, body { height: auto; }
+  .browser { height: auto; min-height: 100vh; overflow: visible; }
+
+  .wrap { width: 760px; max-width: calc(100vw - 48px); margin: 0 auto; }
+
+  .top { height: 64px; background: var(--ivory-100); border-bottom: 1px solid var(--line); }
+  .top .wrap { height: 64px; display: flex; align-items: center; justify-content: space-between; }
+  .top .lockup .name { font-size: 10.5px; }
+  .top .right { display: flex; align-items: center; gap: 14px; font-size: 11px; color: var(--muted); }
+  .top .right a { font-weight: 650; color: var(--ink-900); }
+
+  .hero {
+    position: relative; overflow: hidden; padding: 34px 0 28px;
+    background:
+      radial-gradient(520px 320px at 88% 8%, rgba(201,162,39,.11), transparent 66%),
+      linear-gradient(180deg, #FBF8F1 0%, #F7F3EA 100%);
+    border-bottom: 1px solid var(--line);
+  }
+  .hero .orbit { width: 360px; height: 360px; right: -172px; top: -196px; }
+  .hero .orbit.o2 { width: 240px; height: 240px; right: -112px; top: -136px; border-color: rgba(14,124,123,.12); }
+  .hero .eyebrow { font-size: 10px; }
+  .hero h1 { font-size: 40px; line-height: 1.06; letter-spacing: -.035em; margin: 9px 0 0; }
+  .hero .lead { font-size: 15px; line-height: 1.55; max-width: 640px; margin-top: 11px; }
+  .hero .meta { display: flex; align-items: center; gap: 10px; margin-top: 15px; font-size: 10.5px; color: var(--muted); }
+  .hero .meta .icon-sm { color: var(--gold-600); }
+
+  .formwrap { padding: 26px 0 16px; }
+  .form-card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 14px; box-shadow: var(--shadow-md); padding: 26px 30px 28px;
+  }
+  .sec + .sec { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 15px; }
+  .sec-head .num { font-family: var(--font-mono); font-size: 10.5px; color: var(--gold-700); letter-spacing: .08em; }
+  .sec-head h2 { font-size: 18px; letter-spacing: -.02em; margin: 0; }
+  .sec-head .aside { margin-left: auto; font-size: 10.5px; color: var(--muted); }
+
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 18px; }
+  .field .label { font-size: 12px; }
+  .field .input, .field .select { height: 44px; font-size: 13px; }
+  .field .input .ph { color: #8B95A3; }
+  .field .input.gold-focus { border-color: var(--gold-500); box-shadow: 0 0 0 3px rgba(201,162,39,.20); }
+  .field .help { font-size: 10.5px; }
+  .span-2 { grid-column: 1 / -1; }
+
+  .dropzone {
+    border: 1.5px dashed var(--sand-300); border-radius: 10px; background: #FCFAF5;
+    padding: 16px 18px; display: flex; align-items: center; gap: 16px;
+  }
+  .dropzone .up {
+    width: 38px; height: 38px; border-radius: 50%; background: var(--gold-100);
+    color: var(--gold-700); display: grid; place-items: center; flex: none;
+  }
+  .dropzone .copy { flex: 1; }
+  .dropzone .t { font-size: 12.5px; font-weight: 650; color: var(--ink-900); }
+  .dropzone .s { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+  .dropzone .s a { color: var(--gold-700); font-weight: 650; text-decoration: underline; }
+
+  .preview {
+    display: flex; align-items: center; gap: 14px; margin-top: 12px;
+    border: 1px solid var(--line); border-radius: 9px; padding: 9px 12px; background: #FCFAF5;
+  }
+  .preview .thumb { width: 52px; height: 52px; border-radius: 7px; overflow: hidden; flex: none; border: 1px solid var(--sand-200); }
+  .preview .thumb svg { width: 100%; height: 100%; }
+  .preview .info { flex: 1; min-width: 0; }
+  .preview .fname { font-size: 12px; font-weight: 650; color: var(--ink-900); }
+  .preview .dims { font-size: 10px; color: var(--muted); margin-top: 2px; font-family: var(--font-mono); }
+  .preview .acts { display: flex; align-items: center; gap: 6px; }
+  .preview .acts .btn { height: 32px; padding: 0 11px; font-size: 11px; }
+  .guidance { font-size: 10.5px; line-height: 1.5; color: var(--muted); margin-top: 9px; }
+
+  .consent { display: flex; align-items: flex-start; gap: 11px; padding: 12px 14px; border: 1px solid var(--sand-200); background: var(--sand-100); border-radius: 9px; }
+  .consent .t { font-size: 12.5px; font-weight: 650; color: var(--ink-900); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .consent .d { font-size: 10.5px; line-height: 1.5; color: var(--slate-700); margin-top: 4px; }
+  .consent a { color: var(--gold-700); font-weight: 650; text-decoration: underline; }
+
+  .optional-note { font-size: 10px; color: var(--muted); font-weight: 500; }
+  textarea.ta {
+    width: 100%; height: 74px; resize: none; border: 1px solid var(--control); border-radius: var(--r-2);
+    background: var(--paper); padding: 10px 12px; font-size: 12.5px; color: var(--slate-700);
+  }
+  textarea.ta .ph { color: #8B95A3; }
+  .opts { display: flex; flex-wrap: wrap; gap: 9px 18px; margin-top: 2px; }
+  .opt { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--slate-700); }
+  .opt .check { width: 16px; height: 16px; border-radius: 4px; }
+  .opt .check svg { width: 10px; height: 10px; }
+
+  .submit-row { display: flex; align-items: center; gap: 18px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .submit-row .btn { min-width: 232px; }
+  .submit-row .note { font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+  .submit-row .note a { color: var(--gold-700); font-weight: 650; text-decoration: underline; }
+
+  .privacy {
+    display: flex; align-items: flex-start; gap: 9px; margin-top: 14px;
+    border: 1px solid var(--sand-200); border-radius: 9px; background: var(--sand-100);
+    padding: 11px 14px; font-size: 10.5px; line-height: 1.5; color: #62553E;
+  }
+  .privacy .icon-sm { color: var(--teal-600); margin-top: 1px; }
+  .privacy a { color: var(--gold-700); font-weight: 650; text-decoration: underline; }
+
+  .foot { height: 46px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="browser">
+  <div class="chrome">
+    <div class="chrome-dots"><i class="chrome-dot"></i><i class="chrome-dot"></i><i class="chrome-dot"></i></div>
+    <div class="chrome-url">
+      <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      ais2026.example/register
+    </div>
+    <div class="chrome-right"><span></span><span></span><span></span></div>
+  </div>
+
+  <header class="top">
+    <div class="wrap">
+      <div class="lockup">
+        <div class="mark sm"><svg><use href="#i-konark"/></svg></div>
+        <div><div class="name">Odisha AI Symposium</div><div class="sub">SOA University · 2026</div></div>
+      </div>
+      <div class="right"><span>Registration</span><a href="/register/assisted">Need help? →</a></div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="orbit"></div><div class="orbit o2"></div>
+    <div class="wrap">
+      <div class="eyebrow">Registration · AIS 2026</div>
+      <h1 class="h1">Register for the symposium.</h1>
+      <p class="lead">It takes about five minutes. Your pass is issued at the arrival desk after identity verification.</p>
+      <div class="meta"><svg class="icon-sm"><use href="#i-lock"/></svg> Details saved only for this registration · Privacy notice at /privacy</div>
+    </div>
+  </section>
+
+  <main class="formwrap">
+    <div class="wrap">
+      <form class="form-card" aria-label="Registration form">
+
+        <section class="sec">
+          <div class="sec-head"><span class="num">01</span><h2>Your details</h2><span class="aside">Required fields</span></div>
+          <div class="fields">
+            <div class="field">
+              <label class="label">Full name</label>
+              <div class="input"><span class="ph">Asha Mohanty</span></div>
+            </div>
+            <div class="field">
+              <label class="label">Email</label>
+              <div class="input gold-focus"><span class="ph">asha@example.com</span></div>
+              <div class="help">Used for your registration record.</div>
+            </div>
+            <div class="field">
+              <label class="label">Phone</label>
+              <div class="input"><span class="ph">+91 98765 4321</span></div>
+            </div>
+            <div class="field">
+              <label class="label">Institution</label>
+              <div class="input"><span class="ph">Your college or university</span></div>
+            </div>
+            <div class="field span-2">
+              <label class="label">Category</label>
+              <div class="select"><span>Student</span><svg class="icon-sm" style="margin-left:auto;color:var(--muted)"><use href="#i-chevron-down"/></svg></div>
+              <div class="help">Student · Researcher · Professional · Speaker.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="sec">
+          <div class="sec-head"><span class="num">02</span><h2>Your photo</h2><span class="aside">Used for arrival verification</span></div>
+          <div class="dropzone">
+            <span class="up"><svg class="icon"><use href="#i-upload"/></svg></span>
+            <div class="copy">
+              <div class="t">Drag and drop your photo here</div>
+              <div class="s">or <a href="#">choose a file</a> from your device</div>
+            </div>
+            <a href="#" class="btn btn-outline btn-sm">Browse files</a>
+          </div>
+
+          <div class="preview">
+            <div class="thumb">
+              <svg viewBox="0 0 64 64" aria-label="Photo preview placeholder">
+                <rect width="64" height="64" fill="#E8DCC8"/>
+                <circle cx="32" cy="25" r="11" fill="#BFAE90"/>
+                <path d="M9 64c1-13 10-20 23-20s22 7 23 20z" fill="#BFAE90"/>
+              </svg>
+            </div>
+            <div class="info">
+              <div class="fname">asha-mohanty.jpg</div>
+              <div class="dims">640 × 640 px · preview</div>
+            </div>
+            <div class="acts">
+              <a href="#" class="btn btn-outline btn-sm"><svg class="icon-sm"><use href="#i-refresh"/></svg> Re-upload</a>
+              <a href="#" class="btn btn-ghost btn-sm"><svg class="icon-sm"><use href="#i-x"/></svg> Remove</a>
+            </div>
+          </div>
+          <p class="guidance">Use a recent photo with one clear face, a plain background and good lighting. Minimum 640 × 640 pixels.</p>
+        </section>
+
+        <section class="sec">
+          <div class="sec-head"><span class="num">03</span><h2>Consent and access</h2><span class="aside">One required consent</span></div>
+
+          <div class="consent">
+            <span class="check on"><svg><use href="#i-check"/></svg></span>
+            <div>
+              <div class="t">I consent to biometric face verification <span class="tag tag-gold">v1.0</span></div>
+              <div class="d">Purpose limited to identity verification at the arrival desk. Read the privacy notice at <a href="/privacy">/privacy</a>.</div>
+            </div>
+          </div>
+
+          <div class="fields" style="margin-top:16px">
+            <div class="field span-2">
+              <label class="label">Accessibility needs <span class="optional-note">· optional</span></label>
+              <textarea class="ta" placeholder="Tell us how we can help you access the event."></textarea>
+            </div>
+            <div class="field">
+              <label class="label">Dietary preference <span class="optional-note">· optional</span></label>
+              <div class="select"><span class="ph">Select a preference</span><svg class="icon-sm" style="margin-left:auto;color:var(--muted)"><use href="#i-chevron-down"/></svg></div>
+            </div>
+            <div class="field">
+              <label class="label">Session interests <span class="optional-note">· optional</span></label>
+              <div class="opts">
+                <span class="opt"><span class="check on"><svg><use href="#i-check"/></svg></span> Keynotes</span>
+                <span class="opt"><span class="check"><svg><use href="#i-check"/></svg></span> Workshops</span>
+                <span class="opt"><span class="check on"><svg><use href="#i-check"/></svg></span> Demo floor</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="submit-row">
+          <button class="btn btn-ink" type="button">Submit registration <svg class="icon"><use href="#i-arrow-right"/></svg></button>
+          <div class="note">Need help? Use <a href="/register/assisted">/register/assisted</a> with a staff member.</div>
+        </div>
+      </form>
+
+      <div class="privacy">
+        <svg class="icon-sm"><use href="#i-shield"/></svg>
+        <span>Your details are used only for event registration and arrival verification. Privacy notice: <a href="/privacy">/privacy</a>.</span>
+      </div>
+    </div>
+  </main>
+
+  <div class="container-wide">
+    <div class="foot"><span>© 2026 Odisha AI Symposium · SOA University</span><span>Registration · AIS 2026</span></div>
+  </div>
+</div>
+<script src="mock.js"></script>
+</body>
+</html>

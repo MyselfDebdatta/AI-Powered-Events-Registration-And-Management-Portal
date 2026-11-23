@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>02 — Home sections</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .browser { height: 2340px; }
+  .masthead { height: 68px; border-bottom: 1px solid var(--line); background: var(--ivory-100); }
+  .masthead .container-wide { height: 68px; display:flex; align-items:center; justify-content:space-between; }
+  .nav { display:flex; align-items:center; gap:26px; font-size:12.5px; font-weight:550; color:var(--slate-700); }
+  .nav a.active { color:var(--ink-900); }
+  .nav a.active::after { content:""; display:block; height:2px; background:var(--gold-500); margin-top:7px; }
+  .section-label { display:flex; align-items:center; gap:12px; font-family:var(--font-mono); font-size:10px; letter-spacing:.14em; color:var(--gold-700); text-transform:uppercase; }
+  .section-label::before { content:""; width:28px; height:1px; background:var(--gold-500); }
+  .prog { height: 620px; padding: 54px 0 44px; border-bottom:1px solid var(--line); }
+  .prog-head { display:flex; align-items:flex-end; justify-content:space-between; }
+  .prog-head .right { text-align:right; }
+  .tabs { display:flex; gap:8px; margin-top:26px; }
+  .tab { height:32px; padding:0 14px; display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:var(--r-pill); font-size:11.5px; font-weight:600; color:var(--muted); background:var(--paper); }
+  .tab.on { background:var(--ink-900); color:var(--ivory-100); border-color:var(--ink-900); }
+  .timeline { margin-top: 20px; }
+  .trow { display:grid; grid-template-columns: 132px 1fr 250px; gap:0; border-top:1px solid var(--line); min-height:101px; }
+  .trow:last-child { border-bottom:1px solid var(--line); }
+  .tleft { padding:17px 18px 15px 0; display:flex; gap:12px; }
+  .tleft .node { width:9px; height:9px; border-radius:50%; background:var(--gold-500); margin-top:6px; flex:none; box-shadow:0 0 0 4px rgba(201,162,39,.13); }
+  .tleft .node.teal { background:var(--teal-500); box-shadow:0 0 0 4px rgba(14,124,123,.12); }
+  .tleft .node.sand { background:var(--sand-300); box-shadow:0 0 0 4px rgba(216,199,170,.22); }
+  .tleft b { display:block; font-family:var(--font-mono); font-size:11px; color:var(--ink-900); letter-spacing:.02em; }
+  .tleft span { display:block; font-size:10px; color:var(--muted); margin-top:3px; }
+  .tmain { padding:15px 26px 15px 0; }
+  .tmain h3 { margin:0; font-size:17px; letter-spacing:-.015em; font-weight:650; }
+  .tmain p { margin:5px 0 0; font-size:12.5px; color:var(--muted); }
+  .tmain .tags { display:flex; gap:7px; margin-top:10px; }
+  .tright { border-left:1px solid var(--line); padding:15px 0 15px 22px; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-start; }
+  .tright .meta { font-size:10.5px; color:var(--muted); }
+  .tright a { font-size:11.5px; font-weight:650; display:flex; align-items:center; gap:6px; }
+  .speakers { height: 470px; background: var(--ink-900); color: var(--ivory-100); padding: 48px 0 42px; position:relative; overflow:hidden; }
+  .speakers::before { content:""; position:absolute; width:720px; height:720px; border:1px solid rgba(201,162,39,.10); border-radius:50%; right:-260px; top:-360px; }
+  .speakers .lead { color: rgba(247,243,234,.62); }
+  .sp-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-top:28px; }
+  .sp { height: 206px; border:1px solid rgba(247,243,234,.12); border-radius:10px; background:
+    linear-gradient(145deg, rgba(255,255,255,.045), transparent 55%),
+    linear-gradient(180deg, #162E51 0%, #102542 100%);
+    position:relative; overflow:hidden; }
+  .sp::before { content:""; position:absolute; width:150px; height:150px; border:1px solid rgba(201,162,39,.18); border-radius:50%; left:50%; top:30px; transform:translateX(-50%); }
+  .sp .avatar { position:absolute; left:50%; top:64px; transform:translateX(-50%); width:70px; height:70px; border-radius:50%; border:1px solid rgba(247,243,234,.16); background: radial-gradient(circle at 50% 38%, rgba(201,162,39,.30), rgba(201,162,39,.10)); display:grid; place-items:center; color: rgba(247,243,234,.55); }
+  .sp .avatar svg { width:28px; height:28px; }
+  .sp .num { position:absolute; top:12px; left:13px; font-family:var(--font-mono); font-size:9.5px; color:rgba(247,243,234,.56); }
+  .sp .label { position:absolute; left:14px; right:14px; bottom:13px; font-size:10.5px; letter-spacing:.04em; color:rgba(247,243,234,.55); border-top:1px solid rgba(247,243,234,.10); padding-top:9px; }
+  .sp-cta { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:650; color:var(--gold-500); }
+  .venue { height: 480px; padding: 54px 0 44px; border-bottom:1px solid var(--line); }
+  .venue-grid { display:grid; grid-template-columns: 1.08fr .92fr; gap:48px; margin-top:26px; align-items:stretch; }
+  .map { height: 300px; border:1px solid var(--line); border-radius:12px; background: #F2ECDF; position:relative; overflow:hidden; }
+  .map svg.map-lines { position:absolute; inset:0; width:100%; height:100%; }
+  .map .pin { position:absolute; left:50%; top:48%; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .map .pin .dot { width:14px; height:14px; border-radius:50%; background:var(--gold-500); border:3px solid var(--ivory-50); box-shadow:0 0 0 1px rgba(11,31,58,.12), 0 6px 16px rgba(11,31,58,.18); }
+  .map .pin .tag { background:var(--paper); border:1px solid var(--line); border-radius:5px; padding:5px 9px; font-size:10.5px; font-weight:650; white-space:nowrap; box-shadow:var(--shadow-sm); }
+  .map .desk { position:absolute; left:63%; top:66%; display:flex; align-items:center; gap:6px; font-size:9.5px; color:var(--teal-600); }
+  .map .desk i { width:7px; height:7px; border-radius:50%; background:var(--teal-500); display:block; }
+  .map .compass { position:absolute; right:14px; top:14px; width:30px; height:30px; border:1px solid var(--line-strong); border-radius:50%; display:grid; place-items:center; font-size:9px; color:var(--muted); background:rgba(255,253,248,.6); }
+  .map .scale { position:absolute; left:14px; bottom:12px; font-size:9px; letter-spacing:.08em; color:var(--muted); }
+  .venue-card { display:flex; flex-direction:column; }
+  .vrow { display:grid; grid-template-columns: 96px 1fr; gap:16px; padding:13px 0; border-bottom:1px solid var(--line); }
+  .vrow .k { font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding-top:2px; }
+  .vrow .v { font-size:13px; color:var(--slate-700); line-height:1.5; }
+  .vrow .v b { color:var(--ink-900); font-weight:650; display:block; }
+  .access { margin-top:16px; padding:13px 15px; border:1px solid var(--sand-200); background:var(--sand-100); border-radius:8px; display:flex; gap:11px; align-items:flex-start; }
+  .access .icon { color:var(--gold-600); margin-top:1px; }
+  .access p { margin:0; font-size:11.5px; line-height:1.55; color:#5A4D38; }
+  .faq { height: 330px; padding: 50px 0; }
+  .faq-grid { display:grid; grid-template-columns: 330px 1fr; gap:70px; }
+  .faq-list { border-top:1px solid var(--line); }
+  .faq-row { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:17px 2px; border-bottom:1px solid var(--line); }
+  .faq-row .q { font-size:14px; font-weight:600; color:var(--ink-900); }
+  .faq-row .plus { width:24px; height:24px; border-radius:50%; border:1px solid var(--line-strong); display:grid; place-items:center; color:var(--muted); flex:none; }
+  .footer { height: 330px; background: var(--ink-900); color: var(--ivory-100); padding: 42px 0 26px; position:relative; overflow:hidden; }
+  .footer::before { content:""; position:absolute; width:420px; height:420px; border:1px solid rgba(201,162,39,.12); border-radius:50%; right:-90px; bottom:-260px; }
+  .f-top { display:grid; grid-template-columns: 1.5fr .7fr .7fr .9fr; gap:40px; }
+  .f-brand .name { font-family:var(--font-display); font-size:24px; letter-spacing:-.02em; margin-top:14px; max-width:280px; line-height:1.15; }
+  .f-brand p { font-size:11.5px; color:rgba(247,243,234,.5); line-height:1.6; margin:10px 0 0; max-width:300px; }
+  .f-col h4 { margin:0 0 12px; font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:rgba(247,243,234,.58); font-weight:700; }
+  .f-col a, .f-col span { display:block; font-size:11.5px; color:rgba(247,243,234,.72); margin-bottom:8px; }
+  .f-bottom { margin-top:34px; padding-top:14px; border-top:1px solid rgba(247,243,234,.10); display:flex; align-items:center; justify-content:space-between; font-size:9.5px; color:rgba(247,243,234,.56); letter-spacing:.02em; }
+  .co-brand { display:flex; align-items:center; gap:18px; margin-top:22px; }
+  .co-brand .cb { border-left:1px solid rgba(247,243,234,.16); padding-left:18px; }
+  .co-brand .cb b { display:block; font-size:10px; letter-spacing:.10em; text-transform:uppercase; color:rgba(247,243,234,.82); }
+  .co-brand .cb span { display:block; font-size:9px; color:rgba(247,243,234,.56); margin-top:3px; }
+</style>
+</head>
+<body>
+<div class="browser">
+  <div class="chrome">
+    <div class="chrome-dots"><i class="chrome-dot"></i><i class="chrome-dot"></i><i class="chrome-dot"></i></div>
+    <div class="chrome-url"><svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>ais2026.example</div>
+    <div class="chrome-right"><span></span><span></span><span></span></div>
+  </div>
+
+  <header class="masthead">
+    <div class="container-wide">
+      <div class="lockup">
+        <div class="mark sm"><svg><use href="#i-konark"/></svg></div>
+        <div><div class="name" style="font-size:11.5px">Odisha AI Symposium</div><div class="sub">SOA University · 2026</div></div>
+      </div>
+      <nav class="nav">
+        <a href="#">Programme</a><a href="#">Speakers</a><a href="#">Venue</a><a href="#">FAQ</a>
+        <a href="#" class="btn btn-ink btn-sm" style="height:34px;padding:0 14px">Register interest</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="prog">
+    <div class="container">
+      <div class="prog-head">
+        <div>
+          <div class="section-label">02 — Programme</div>
+          <h2 class="h1" style="margin-top:10px">A programme in progress.</h2>
+          <p class="body" style="max-width:580px;margin-top:10px">Talks, research and hands-on workshops. Session titles, speakers and times will be published as they are confirmed.</p>
+        </div>
+        <div class="right">
+          <span class="pill pill-outline">Provisional</span>
+          <div class="caption muted" style="margin-top:9px">Dates to be announced</div>
+        </div>
+      </div>
+      <div class="tabs">
+        <span class="tab on">All sessions</span><span class="tab">Talks</span><span class="tab">Workshops</span><span class="tab">Demo floor</span>
+      </div>
+      <div class="timeline">
+        <div class="trow">
+          <div class="tleft"><span class="node"></span><div><b>SESSION 01</b><span>Time TBA</span></div></div>
+          <div class="tmain"><h3>Opening remarks and keynote</h3><p>Speaker and session title to be announced.</p><div class="tags"><span class="tag tag-gold">Keynote</span><span class="tag">Main hall</span></div></div>
+          <div class="tright"><span class="meta">Plenary · all participants</span><a href="#">Session details <svg class="icon" style="width:12px;height:12px"><use href="#i-arrow-right"/></svg></a></div>
+        </div>
+        <div class="trow">
+          <div class="tleft"><span class="node teal"></span><div><b>SESSION 02</b><span>Time TBA</span></div></div>
+          <div class="tmain"><h3>Research and applications track</h3><p>Peer research, field notes and applied AI from Odisha.</p><div class="tags"><span class="tag">Talks</span><span class="tag">Track room</span></div></div>
+          <div class="tright"><span class="meta">Parallel session</span><a href="#">Session details <svg class="icon" style="width:12px;height:12px"><use href="#i-arrow-right"/></svg></a></div>
+        </div>
+        <div class="trow">
+          <div class="tleft"><span class="node sand"></span><div><b>SESSION 03</b><span>Time TBA</span></div></div>
+          <div class="tmain"><h3>Applied AI workshop</h3><p>Hands-on building with local data and public problems.</p><div class="tags"><span class="tag">Workshop</span><span class="tag">Requirements to be announced</span></div></div>
+          <div class="tright"><span class="meta">Registration required</span><a href="#">Workshop notes <svg class="icon" style="width:12px;height:12px"><use href="#i-arrow-right"/></svg></a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="speakers">
+    <div class="container">
+      <div class="between" style="align-items:flex-end">
+        <div>
+          <div class="section-label" style="color:var(--gold-500)">03 — Speakers</div>
+          <h2 class="h1" style="color:var(--ivory-50);margin-top:10px">Voices to be announced.</h2>
+          <p class="lead" style="max-width:560px;margin-top:10px">The speaker lineup is being confirmed. Sessions will be published here as they are announced.</p>
+        </div>
+        <a href="#" class="sp-cta">View all speakers <svg class="icon" style="width:14px;height:14px"><use href="#i-arrow-right"/></svg></a>
+      </div>
+      <div class="sp-grid">
+        <div class="sp"><span class="num">01</span><div class="avatar"><svg><use href="#i-user"/></svg></div><div class="label">Speaker to be announced</div></div>
+        <div class="sp"><span class="num">02</span><div class="avatar"><svg><use href="#i-user"/></svg></div><div class="label">Speaker to be announced</div></div>
+        <div class="sp"><span class="num">03</span><div class="avatar"><svg><use href="#i-user"/></svg></div><div class="label">Speaker to be announced</div></div>
+        <div class="sp"><span class="num">04</span><div class="avatar"><svg><use href="#i-user"/></svg></div><div class="label">Speaker to be announced</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="venue">
+    <div class="container">
+      <div class="between" style="align-items:flex-end">
+        <div>
+          <div class="section-label">04 — Venue</div>
+          <h2 class="h1" style="margin-top:10px">Find your way in.</h2>
+        </div>
+        <div class="caption muted" style="text-align:right;max-width:280px">Arrival, accessibility and travel notes will be published before the event.</div>
+      </div>
+      <div class="venue-grid">
+        <div class="map">
+          <svg class="map-lines" viewBox="0 0 600 300" preserveAspectRatio="none">
+            <g stroke="#D8C7AA" stroke-width="1" fill="none">
+              <path d="M-20 82 C90 74 150 98 230 92 S420 54 620 70"/>
+              <path d="M-20 176 C80 168 170 190 265 182 S450 148 620 164"/>
+              <path d="M-20 248 C110 232 210 252 330 238 S500 210 620 222"/>
+              <path d="M96 -20 C104 70 92 140 112 210 S130 270 136 320"/>
+              <path d="M250 -20 C242 60 262 118 252 190 S238 270 246 320"/>
+              <path d="M420 -20 C410 58 432 132 424 206 S414 280 430 320"/>
+              <path d="M540 -20 C530 70 552 154 544 230 S540 288 548 320"/>
+            </g>
+            <g stroke="#E8DCC8" stroke-width="5" fill="none" opacity=".8">
+              <path d="M-20 176 C80 168 170 190 265 182 S450 148 620 164"/>
+              <path d="M250 -20 C242 60 262 118 252 190 S238 270 246 320"/>
+            </g>
+            <g fill="#D8C7AA" opacity=".55">
+              <rect x="150" y="108" width="58" height="34" rx="2"/><rect x="286" y="112" width="82" height="40" rx="2"/>
+              <rect x="160" y="204" width="52" height="28" rx="2"/><rect x="450" y="186" width="60" height="30" rx="2"/>
+            </g>
+            <circle cx="300" cy="146" r="58" fill="rgba(201,162,39,.07)" stroke="rgba(201,162,39,.38)" stroke-width="1" stroke-dasharray="3 4"/>
+          </svg>
+          <div class="pin"><span class="dot"></span><span class="tag">SOA University</span></div>
+          <div class="desk"><i></i> Arrival desk</div>
+          <div class="compass">N</div>
+          <div class="scale">BHUBANESWAR · NOT TO SCALE</div>
+        </div>
+        <div class="venue-card">
+          <div class="vrow"><div class="k">Venue</div><div class="v"><b>SOA University</b>Bhubaneswar, Odisha</div></div>
+          <div class="vrow"><div class="k">Arrival</div><div class="v">Arrival desk location to be announced.<br><span class="muted">Signage and support details to be announced.</span></div></div>
+          <div class="vrow"><div class="k">Getting here</div><div class="v">Travel notes, parking and public transport details will be published.</div></div>
+          <div class="vrow" style="border-bottom:0"><div class="k">Accessibility</div><div class="v">Accessibility contact to be announced.</div></div>
+          <div class="access"><svg class="icon"><use href="#i-accessibility"/></svg><p>Accessibility notes, arrival support and contact details will be published before the event.</p></div>
+          <div class="row gap-3" style="margin-top:16px"><a class="btn btn-outline btn-sm" href="#">Travel notes <svg class="icon"><use href="#i-arrow-up-right"/></svg></a><a class="btn btn-link" href="#">Contact the team</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <div class="container faq-grid">
+      <div>
+        <div class="section-label">05 — FAQ</div>
+        <h2 class="h2" style="margin-top:10px">Good to know.</h2>
+        <p class="small muted" style="margin-top:10px;max-width:270px">Still unsure? Write to the host office and the team will point you to the right person.</p>
+        <a class="btn btn-link" href="#" style="margin-top:14px">Contact the team <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+      </div>
+      <div class="faq-list">
+        <div class="faq-row"><span class="q">How do I register?</span><span class="plus"><svg class="icon-sm"><use href="#i-plus"/></svg></span></div>
+        <div class="faq-row"><span class="q">How do I get my pass?</span><span class="plus"><svg class="icon-sm"><use href="#i-plus"/></svg></span></div>
+        <div class="faq-row"><span class="q">What should I bring?</span><span class="plus"><svg class="icon-sm"><use href="#i-plus"/></svg></span></div>
+        <div class="faq-row"><span class="q">Is the venue accessible?</span><span class="plus"><svg class="icon-sm"><use href="#i-plus"/></svg></span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="f-top">
+        <div class="f-brand">
+          <div class="lockup"><div class="mark on-dark"><svg><use href="#i-konark"/></svg></div><div><div class="name" style="font-size:10.5px;color:var(--ivory-100)">Odisha AI Symposium</div><div class="sub" style="color:rgba(247,243,234,.56)">2026 · Bhubaneswar</div></div></div>
+          <div class="name">Intelligence, rooted in Odisha.</div>
+          <p>A symposium for researchers, students and builders working on AI that serves place and public good.</p>
+          <div class="co-brand">
+            <div class="cb"><b>SOA University</b><span>Host institution</span></div>
+            <div class="cb"><b>AIC for Innovation Center</b><span>Co-host</span></div>
+          </div>
+        </div>
+        <div class="f-col"><h4>Event</h4><a href="#">Programme</a><a href="#">Speakers</a><a href="#">Venue</a><a href="#">FAQ</a></div>
+        <div class="f-col"><h4>Practical</h4><a href="#">Registration</a><a href="#">Registration status</a><a href="#">Accessibility</a><a href="#">Code of conduct</a></div>
+        <div class="f-col"><h4>Host office</h4><span>SOA University</span><span>Bhubaneswar, Odisha</span><span>Contact to be announced</span><a href="#" style="color:var(--gold-500);margin-top:14px">Register interest →</a></div>
+      </div>
+      <div class="f-bottom"><span>© 2026 Odisha AI Symposium · Content in development</span><span>Privacy · Terms · Photography consent</span></div>
+    </div>
+  </footer>
+</div>
+<script src="mock.js"></script>
+</body>
+</html>
